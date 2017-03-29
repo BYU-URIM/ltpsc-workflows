@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package dslVersion="1.0.0.0" 
+        Id="daacc4f1-47ab-451e-9dda-312700b3e58d" 
+        solutionId="daacc4f1-47ab-451e-9dda-312700b3e58d" 
+        xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel" 
+        name="ltpsc_workflows"
+        sharePointProductVersion="15.0">
+  <features>
+        <featureReference itemId="7167cfd0-73fe-48b6-b5a6-432ae8373b87" />
+  </features>
+</package>

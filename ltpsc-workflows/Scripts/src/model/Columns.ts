@@ -1,0 +1,433 @@
+export class Column {
+    displayName: string
+    spName: string
+    type: FieldType
+    metadata?: any
+    defaultValue?: any
+    displayOnly?: boolean
+    required?: boolean
+
+
+    // chainable muators
+    makeDisplayOnly() {
+        this.displayOnly = true
+        return this
+    }
+
+    makeRequired() {
+        this.required = true
+        return this
+    }
+
+    setDefaultValue(defaultValue: any) {
+        this.defaultValue = defaultValue
+        return this
+    }
+
+}
+
+export type FieldType = 'text' | 'choice' | 'checkbox' | 'textarea' | 'datetime' | 'number'
+
+export class AccessionNumber extends Column {
+    displayName = 'Accession Number'
+    spName = 'Accession_x0020_Number'
+    type = 'text' as FieldType
+}
+
+export class ApproveProcessingPlan extends Column {
+    displayName = 'Approve Processing Plan'
+    spName = 'Approve_x0020_Processing_x0020_P'
+    type = 'checkbox' as FieldType
+}
+
+export class ApproveRequest extends Column {
+    displayName = 'Approve ApproveRequest'
+    spName = 'Approve_x0020_Request'
+    type = 'checkbox' as FieldType
+}
+
+export class ArrangementAndDescriptionCmments extends Column {
+    displayName = 'Arrangement and Description Comments'
+    spName = 'Arrangement_x0020_and_x0020_Desc'
+    type = 'textarea' as FieldType
+}
+
+export class ArrangementAndDescriptionDate extends Column {
+    displayName = 'Arrangement and Description Date'
+    spName = 'Arrangement_x0020_and_x0020_Desc0'
+    type = 'datetime' as FieldType
+}
+
+export class AssignedForProcessingTheCollection extends Column {
+    displayName = 'Assigned for Processing the Collection'
+    spName = 'Assigned_x0020_for_x0020_Process'
+    type = 'checkbox' as FieldType
+}
+
+export class CallNumber extends Column {
+    displayName = 'Call Number'
+    spName = 'Call_x0020_Number'
+    type = 'text' as FieldType
+}
+
+export class CatalogReviewApproval extends Column {
+    displayName = 'Catalog Review Approval'
+    spName = 'Catalog_x0020_Review_x0020_Appro'
+    type = 'checkbox' as FieldType
+}
+
+export class CatalogReviewComments extends Column {
+    displayName = 'Catalog Review Comments'
+    spName = 'Catalog_x0020_Review_x0020_Comme'
+    type = 'textarea' as FieldType
+}
+
+export class CatalogReviewDate extends Column {
+    displayName = 'Catalog Review Date'
+    spName = 'Catalog_x0020_Review_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class CatalogingDate extends Column {
+    displayName = 'Cataloging Date'
+    spName = 'Cataloging_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class CatalogingDone extends Column {
+    displayName = 'Cataloging Done'
+    spName = 'Cataloging_x0020_Done'
+    type = 'checkbox' as FieldType
+}
+
+export class CollectingArea extends Column {
+    displayName = 'Collecting Area'
+    spName = 'Collecting_x0020_Area'
+    type = 'choice' as FieldType
+    metadata = {
+        choices: [
+            '19th Century', '20th Century', '21st Century', 
+            'Arts and Communication', 'Film Music', 'Folklore Archives', 
+            'Literary Manuscripts', 'Mormon Authors', 'Motion Picture Archives', 
+            'Music', 'University Archives', 'Veterans - Saints of Ward'
+        ]
+    }
+}
+
+export class CollectionLocationAssigned extends Column {
+    displayName = 'Collection Location Assigned'
+    spName = 'Collection_x0020_Location_x0020_'
+    type = 'checkbox' as FieldType
+}
+
+export class CollectionManagementApproval extends Column {
+    displayName = 'Collection Management Approval'
+    spName = 'Collection_x0020_Management_x002'
+    type = 'checkbox' as FieldType
+}
+
+export class CollectionManagementComments extends Column {
+    displayName = 'Collection Management Comments'
+    spName = 'Collection_x0020_Management_x0020'
+    type = 'textarea' as FieldType
+}
+
+export class CollectionManagementReviewDate extends Column {
+    displayName = 'Collection Management Review Date'
+    spName = 'Collection_x0020_Management_x0021'
+    type = 'datetime' as FieldType
+}
+
+export class CollectionType extends Column {
+    displayName = 'Collection Type'
+    spName = 'Collection_x0020_Type'
+    type = 'choice' as FieldType
+    metadata = {
+        choices: ['MSS', 'UA', 'FA']
+    }
+}
+
+export class CommentsOnProcessingPlan extends Column {
+    displayName = 'Comments on Processing Plan'
+    spName = 'Comments_x0020_on_x0020_Processi'
+    type = 'textarea' as FieldType
+}
+
+export class Complete extends Column {
+    displayName = 'Complete'
+    spName = 'Complete'
+    type = 'checkbox' as FieldType
+}
+
+export class ComponentRequest extends Column {
+    displayName = 'Component Request'
+    spName = 'Component_x0020_Request'
+    type = 'text' as FieldType
+}
+
+export class ComponentRequestID extends Column {
+    displayName = 'Component Request ID'
+    spName = 'Component_x0020_Request_x0020_ID'
+    type = 'text' as FieldType
+}
+
+export class ConditionRecommendationsComments extends Column {
+    displayName = 'Condition Recommendations - Comments'
+    spName = 'Condition_x0020_Recommendations_'
+    type = 'textarea' as FieldType
+}
+
+export class ConditionReportRecommendations extends Column {
+    displayName = 'Condition Report - Recommendations'
+    spName = 'Condition_x0020_Report_x0020__x0'
+    type = 'textarea' as FieldType
+}
+
+export class CurrentArragnement extends Column {
+    displayName = 'Current Arrangement'
+    spName = 'Current_x0020_Arrangement'
+    type = 'textarea' as FieldType
+}
+
+export class DateDelivered extends Column {
+    displayName = 'Date Delivered'
+    spName = 'Date_x0020_Delivered'
+    type = 'datetime' as FieldType
+}
+
+export class Deaccession extends Column {
+    displayName = 'Deaccession'
+    spName = 'Deaccession_x003F_'
+    type = 'checkbox' as FieldType
+}
+
+export class DeliveryLocation extends Column {
+    displayName = 'Delivery Location'
+    spName = 'Delivery_x0020_Location'
+    type = 'text' as FieldType
+}
+
+export class DeliveryStatus extends Column {
+    displayName = 'Delivery Status'
+    spName = 'Delivery_x0020_Status'
+    type = 'checkbox' as FieldType
+}
+
+export class DescriptionOfProposedDeaccession extends Column {
+    displayName = 'Description of Proposed Deaccession'
+    spName = 'Description_x0020_of_x0020_Propo'
+    type = 'textarea' as FieldType
+}
+
+export class ExpectedDeliveryDate extends Column {
+    displayName = 'Expected Delivery Date'
+    spName = 'Expected_x0020_Delivery_x0020_Da'
+    type = 'datetime' as FieldType
+}
+
+export class ExtentInLinearFt extends Column {
+    displayName = 'Extent - in linear ft'
+    spName = 'Extent_x0020__x002d__x0020_in_x0'
+    type = 'number' as FieldType
+}
+
+export class FindingAidUploaded extends Column {
+    displayName = 'Finding Aid Uploaded'
+    spName = 'Finding_x0020_Aid_x0020_Uploaded'
+    type = 'checkbox' as FieldType
+}
+
+export class LabelingBarcodeLocationAssigned extends Column {
+    displayName = 'Labeling Barcode Location Assigned'
+    spName = 'Labeling_x0020_Barcode_x0020_Loc'
+    type = 'checkbox' as FieldType
+}
+
+export class LabelingBarcodeLocationAssignedDate extends Column {
+    displayName = 'Labeling Barcode Location Assigned Date'
+    spName = 'Labeling_x0020_Barcode_x0020_Loc0'
+    type = 'datetime' as FieldType
+}
+
+export class ListMaterialsToBePlacedIntoVault extends Column {
+    displayName = 'List Materials to be Placed into Vault'
+    spName = 'List_x0020_Materials_x0020_to_x0'
+    type = 'textarea' as FieldType
+}
+
+export class LocationOfMaterials extends Column {
+    displayName = 'Location of Materials'
+    spName = 'Location_x0020_of_x0020_Material'
+    type = 'textarea' as FieldType
+}
+
+export class MonetaryValueOfMaterials extends Column {
+    displayName = 'Monetary Value of Materials'
+    spName = 'Monetary_x0020_Vale_x0020_of_x00'
+    type = 'number' as FieldType
+}
+
+export class PickupDate extends Column {
+    displayName = 'Pickup Date'
+    spName = 'Pickup_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class PickupLocation extends Column {
+    displayName = 'Pickup Location'
+    spName = 'Pickup_x0020_Location'
+    type = 'text' as FieldType
+}
+
+export class ProcessPlanRevisionDate extends Column {
+    displayName = 'Process Plan Revision Date'
+    spName = 'Process_x0020_Plan_x0020_Revisio'
+    type = 'datetime' as FieldType
+}
+
+export class ProcessingComplete extends Column {
+    displayName = 'Processing Complete'
+    spName = 'Processing_x0020_Complete'
+    type = 'checkbox' as FieldType
+}
+
+export class ProcessingLevel extends Column {
+    displayName = 'Processing Level'
+    spName = 'Processing_x0020_Level'
+    type = 'choice' as FieldType
+    metadata = {
+        choices: ['Minimal', 'Value Added', 'File Level']
+    }
+}
+
+export class ProcessingPlanDate extends Column {
+    displayName = 'Processing Plan Date'
+    spName = 'Processing_x0020_Plan_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class ProposedSeriesArrangement extends Column {
+    displayName = 'Proposed Series Arrangement'
+    spName = 'Proposed_x0020_Series_x0020_Arra'
+    type = 'textarea' as FieldType
+}
+
+export class Restrictions extends Column {
+    displayName = 'Restrictions'
+    spName = 'Restrictions'
+    type = 'textarea' as FieldType
+}
+
+export class RestrictionsComments extends Column {
+    displayName = 'Restrictions-Comments'
+    spName = 'Restrictions_x002d_Comments'
+    type = 'textarea' as FieldType
+}
+
+export class ReviewDate extends Column {
+    displayName = 'Review Date'
+    spName = 'Review_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class SubmittingCurator extends Column {
+    displayName = 'Submitting Curator'
+    spName = 'Submitting_x0020_Curator'
+    type = 'text' as FieldType
+}
+
+export class SupervisorApproval extends Column {
+    displayName = 'Supervisor Approval'
+    spName = 'Supervisor_x0020_Approval'
+    type = 'checkbox' as FieldType
+}
+
+export class SupervisorReviewDate extends Column {
+    displayName = 'Supervisor Review Date'
+    spName = 'Supervisor_x0020_Review_x0020_Da'
+    type = 'datetime' as FieldType
+}
+
+export class UploadDate extends Column {
+    displayName = 'Upload Date'
+    spName = 'Upload_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class VaultMaterialsIncluded extends Column {
+    displayName = 'Vault Materials Included'
+    spName = 'Vault_x0020_Materials_x0020_Incl'
+    type = 'checkbox' as FieldType
+}
+
+export class Title extends Column {
+    displayName = 'Title'
+    spName = 'Title'
+    type = 'text' as FieldType
+}
+
+export class DescriptionOfProposedProcessing extends Column {
+    displayName = 'Description of Proposed Processing'
+    spName = 'Description_x0020_of_x0020_Propo0'
+    type = 'textarea' as FieldType
+}
+
+export class AssignedProcessor extends Column {
+    displayName = 'Assigned Processor'
+    spName = 'Assigned_x0020_Processor'
+    type = 'text' as FieldType
+}
+
+export class DeliveryExplanation extends Column {
+    displayName = 'Delivery Explanation'
+    spName = 'Deliver_x0020_Explanation'
+    type = 'textarea' as FieldType
+}
+
+export class DescriptionOfDeaccessionedMaterials extends Column {
+    displayName = 'Description of Deaccessioned Materials'
+    spName = 'Description_x0020_of_x0020_Deacc'
+    type = 'textarea' as FieldType
+}
+
+export class PickupShelvingLocation extends Column {
+    displayName = 'Pickup Shelving Location'
+    spName = 'Pickup_x0020_Shelving_x0020_Loca'
+    type = 'text' as FieldType
+}
+
+export class PickupShelvingDate extends Column {
+    displayName = 'Pickup Shelving Date'
+    spName = 'Pickup_x0020_Shelving_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class LabelingDate extends Column {
+    displayName = 'Labeling Date'
+    spName = 'Labeling_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class LabelingDone extends Column {
+    displayName = 'Labeling Done'
+    spName = 'Labeling_x0020_Done'
+    type = 'checkbox' as FieldType
+}
+
+export class BarcodeDate extends Column {
+    displayName = 'Barcode Date'
+    spName = 'Barcode_x0020_Date'
+    type = 'datetime' as FieldType
+}
+
+export class BarcodingComplete extends Column {
+    displayName = 'Barcoding Complete'
+    spName = 'Barcoding_x0020_Complete'
+    type = 'checkbox' as FieldType
+}
+
+export class CollectionLocationAssignmentDate extends Column {
+    displayName = 'Collection Location Assignment Date'
+    spName = 'Collection_x0020_Assignment_x002'
+    type = 'datetime' as FieldType
+}

@@ -1,0 +1,41 @@
+{
+  "name": "ltpsc-workflows",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "webpack-dev-server --inline --content-base dist",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "MIT",
+  "homepage": "",
+  "devDependencies": {
+    "@types/core-decorators": "^0.10.31",
+    "@types/es6-promise": "0.0.32",
+    "@types/isomorphic-fetch": "0.0.33",
+    "@types/material-ui": "^0.16.57",
+    "@types/react": "^0.14.36",
+    "@types/react-dom": "^0.14.17",
+    "@types/react-tap-event-plugin": "^0.0.30",
+    "awesome-typescript-loader": "^2.2.4",
+    "source-map-loader": "^0.2.0",
+    "typescript": "2.0.3",
+    "webpack": "^1.9.6",
+    "webpack-dev-server": "^1.8.2"
+  },
+  "dependencies": {
+    "core-decorators": "^0.15.0",
+    "es6-promise": "^4.1.0",
+    "inversify": "^3.1.0",
+    "inversify-inject-decorators": "^3.0.1",
+    "isomorphic-fetch": "^2.2.1",
+    "material-ui": "^0.17.0",
+    "mobx": "^2.5.1",
+    "mobx-react": "^3.5.6",
+    "mobx-react-devtools": "^4.2.6",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "react-tap-event-plugin": "^2.0.1",
+    "reflect-metadata": "^0.1.10"
+  }
+}
