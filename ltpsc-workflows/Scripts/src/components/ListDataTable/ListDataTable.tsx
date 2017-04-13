@@ -32,9 +32,16 @@ export class ListDataTable extends React.Component<any, any> {
                         this.listDataStore.currentViewListItems.map((listItem, itemIndex) => (
                             <TableRow key={itemIndex}>
                             {
-                                this.listDataStore.currentView.columns.map((column, index) => (
-                                    <TableRowColumn key={`${index}`} >{`${listItem[column.spName]}`}</TableRowColumn>
-                                ))
+                                this.listDataStore.currentView.columns.map((column, index) => {
+                                    if(column.type === 'checkbox') {
+                                        return <TableRowColumn key={`${index}`} >{`${listItem[column.spName]}`}</TableRowColumn>
+                                    } else if(column.type == 'lookup') {
+                                        return <TableRowColumn key={`${index}`} >{this.listDataStore.lookupValues.get(column.spName)[listItem[column.spName]] || ' '}</TableRowColumn>
+                                    } else {
+                                        // default return for all other column types
+                                        return <TableRowColumn key={`${index}`} >{listItem[column.spName] || ' '}</TableRowColumn>
+                                    }
+                                })
                             }
                             </TableRow>
                         ))

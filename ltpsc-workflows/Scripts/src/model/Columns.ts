@@ -26,7 +26,15 @@ export class Column {
 
 }
 
-export type FieldType = 'text' | 'choice' | 'checkbox' | 'textarea' | 'datetime' | 'number'
+// NOTE the difference between choice and lookup is that choice has hardcoded options whereas lookup dynamically fetches options from an SP list 
+export type FieldType = 'text' | 'choice' | 'checkbox' | 'textarea' | 'datetime' | 'number' | 'lookup'
+
+// dictionary type that maps a lookup column's option SP Id to their respective text titles
+// it is important to store this information because an SP list query only returns an ID for the lookup option, wheras the app needs to display
+// option text.  User interfacing requires text, SP interfacing requires ID
+export interface ILookupOptionDictionary {
+    [OptionId: number]: string
+}
 
 export class AccessionNumber extends Column {
     displayName = 'Accession Number'
@@ -102,16 +110,8 @@ export class CatalogingDone extends Column {
 
 export class CollectingArea extends Column {
     displayName = 'Collecting Area'
-    spName = 'Collecting_x0020_Area'
-    type = 'choice' as FieldType
-    metadata = {
-        choices: [
-            '19th Century', '20th Century', '21st Century', 
-            'Arts and Communication', 'Film Music', 'Folklore Archives', 
-            'Literary Manuscripts', 'Mormon Authors', 'Motion Picture Archives', 
-            'Music', 'University Archives', 'Veterans - Saints of Ward'
-        ]
-    }
+    spName = 'Collecting_x0020_AreaId'
+    type = 'lookup' as FieldType
 }
 
 export class CollectionLocationAssigned extends Column {

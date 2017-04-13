@@ -11,6 +11,7 @@ import { DATE_REGEX } from '../utils/general';
 import { ListItem, DEFAULT_LIST_ITEM } from '../model/ListItem';
 import { StageName, StageOrder } from '../model/Stages';
 import { EditFormStatusEnum } from '../model/EditFormStatusEnum';
+import { ILookupOptionDictionary } from '../model/Columns';
 
 
 @autobind
@@ -21,7 +22,8 @@ export default class ListDataStore {
     @observable currentEditItem: ListItem = DEFAULT_LIST_ITEM
     @observable listitems: Array<ListItem> = []
     @observable selectedItemIndex: number = null
-    @observable isShowFormError: boolean = false
+    @observable lookupValues: Map<string, ILookupOptionDictionary> = new Map()
+    @observable errorMessage: string = null
 
     @observable private editFormDisplayStatus: EditFormStatusEnum = EditFormStatusEnum.CLOSED
     
@@ -34,16 +36,17 @@ export default class ListDataStore {
     }
 
     @action
-    async fetchData() {
-        // this.currentUser = await PersistorService.fetchCurrentUser()
-        // this.currentView = this.currentUser.group.permittedViews[0] || DEAFULT_VIEW
-        // this.listitems = await PersistorService.fetchListItems()
-        
+    async fetchData() {        
+        // user and group data
         const currentUser = await PersistorService.fetchCurrentUser()
         runInAction(() => this.currentUser = currentUser)
-
         runInAction(() => this.currentView = this.currentUser.group.permittedViews[0] || DEAFULT_VIEW)
 
+        // lookup column metadata
+        const lookupValuesMap = await PersistorService.fetchLookupValues()
+        runInAction(() => this.lookupValues = lookupValuesMap)
+
+        // list items
         const listItems = await PersistorService.fetchListItems()
         runInAction(() => this.listitems = listItems)
     }
@@ -78,7 +81,7 @@ export default class ListDataStore {
         if(this.canSubmitCurrentItem) {
             this.saveEditItemForm()
         } else {
-            this.showFormError()
+            this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`)
         }
     }
 
@@ -87,7 +90,7 @@ export default class ListDataStore {
             this.currentEditItem.Stage = this.currentEditItemNextStage
             this.saveEditItemForm()
         } else {
-            this.showFormError()
+            this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`)
         }
     }
 
@@ -95,6 +98,7 @@ export default class ListDataStore {
         this.currentEditItem[key] = value
     }
 
+    // for keeping track of which list item is selcted in the table
     @action updateSelectedItemIndex(indexSingletonArray: Array<number>) {
         this.selectedItemIndex = indexSingletonArray.length > 0 ? indexSingletonArray[0] : null
     }
@@ -102,6 +106,14 @@ export default class ListDataStore {
     @action returnEditItemToPreviousStage() {
         this.currentEditItem.Stage = this.currentEditItemPreviousstage
         this.submitEditItemForm()
+    }
+
+    @action raiseError(message: string, errorMetadata?: any) {
+        if(errorMetadata) console.log(errorMetadata)
+        this.errorMessage = message
+        setTimeout(action(() => {
+            this.errorMessage = null
+        }), 5000)
     }
 
     @computed get currentEditItemValidationState() {
@@ -119,6 +131,10 @@ export default class ListDataStore {
 
             return accumulator
         }, {})
+    }
+
+    @computed get formErrorCount(): number {
+        return Object.keys(this.currentEditItemValidationState).length
     }
 
     @computed get canSubmitCurrentItem(): boolean {
@@ -151,11 +167,6 @@ export default class ListDataStore {
         return this.editFormDisplayStatus !== EditFormStatusEnum.CLOSED
     }
 
-    @computed get editFormErrorMessage(): string {
-        const errors = Object.keys(this.currentEditItemValidationState)
-        return `${errors.length || 1} form error${errors.length > 1 ? 's' : ''} - please fill out all required fields.`
-    }
-
     @computed get requiredColumnsFromCurrentView() {
         return this.currentView.columns.filter((column) => column.required)
     }
@@ -171,22 +182,21 @@ export default class ListDataStore {
         return this.currentViewListItems[this.selectedItemIndex].Id
     }
 
-    @action private showFormError() {
-        this.isShowFormError = true
-        setTimeout(action(() => {
-            this.isShowFormError = false
-        }), 5000)
-        
-    }
 
     private saveEditItemForm() {
         if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW) {
-            this.listitems.push(Object.assign({}, this.currentEditItem))
+            PersistorService.createListItem(this.currentEditItem).then(action(() => {
+                this.listitems.push(this.currentEditItem)
+                this.currentEditItem = DEFAULT_LIST_ITEM
+                this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
+            })).catch(action((error) => this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error)))
         } else if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING) {
-            let staleItemIndex: number = this.listitems.findIndex((listItem) => this.selectedItemID === listItem.Id)
-            this.listitems[staleItemIndex] = this.currentEditItem
+            PersistorService.updateListItem(this.currentEditItem).then(action(() => {
+                let staleItemIndex: number = this.listitems.findIndex((listItem) => this.selectedItemID === listItem.Id)
+                this.listitems[staleItemIndex] = this.currentEditItem
+                this.currentEditItem = DEFAULT_LIST_ITEM
+                this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
+            })).catch(action((error) => this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error)))
         }
-        this.currentEditItem = DEFAULT_LIST_ITEM
-        this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
     }
 }

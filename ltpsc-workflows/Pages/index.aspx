@@ -1,4 +1,4 @@
-﻿<%-- The following 4 lines are ASP.NET directives needed when using SharePoint components --%>
+﻿<%--<%--<%--<%-- The following 4 lines are ASP.NET directives needed when using SharePoint components --%>
 
 <%@ Page Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" MasterPageFile="~masterurl/default.master" Language="C#" %>
 
@@ -8,15 +8,11 @@
 
 <%-- The markup and script in the following Content element will be placed in the <head> of the page --%>
 <asp:Content ContentPlaceHolderID="PlaceHolderAdditionalPageHead" runat="server">
-    <script type="text/javascript" src="../Scripts/jquery-1.9.1.min.js"></script>
-    <SharePoint:ScriptLink name="sp.js" runat="server" OnDemand="true" LoadAfterUI="true" Localizable="false" />
     <meta name="WebPartPageExpansion" content="full" />
 
     <!-- Add your CSS styles to the following file -->
     <link rel="Stylesheet" type="text/css" href="../Content/App.css" />
-
-    <!-- Add your JavaScript to the following file -->
-    <script type="text/javascript" src="../Scripts/build/bundle.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" />
   
 </asp:Content>
 
@@ -28,8 +24,7 @@
 <%-- The markup and script in the following Content element will be placed in the <body> of the page --%>
 <asp:Content ContentPlaceHolderID="PlaceHolderMain" runat="server">
 
-    <div>
-        
-    </div>
+    <div id='root'></div>
+    <script type="text/javascript" src="../Scripts/dist/bundle.js"></script>
 
 </asp:Content>

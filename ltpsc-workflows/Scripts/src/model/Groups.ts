@@ -1,9 +1,10 @@
 import * as Views from './Views'
 
-export interface IGroup {
+interface IGroup {
     name: string
     permittedViews: Array<Views.IView>
 }
+export default IGroup
 
 export const Curator: IGroup = {
     name: 'Curator',

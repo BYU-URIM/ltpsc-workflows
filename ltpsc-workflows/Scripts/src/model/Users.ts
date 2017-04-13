@@ -1,4 +1,4 @@
-import { IGroup } from './Groups';
+import IGroup from './Groups';
 import * as Groups from './Groups'
 
 export class IUser {

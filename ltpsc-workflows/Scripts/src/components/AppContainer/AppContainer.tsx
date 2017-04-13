@@ -24,9 +24,6 @@ export class AppContainer extends React.Component<any, any> {
     @inject(ListDataStore)
     private listDataStore: ListDataStore
 
-    componentWillMount() {
-        this.listDataStore.fetchData()
-    }
 
     onSelectView(value) {
         this.listDataStore.setCurrentView(value)
@@ -38,16 +35,6 @@ export class AppContainer extends React.Component<any, any> {
             <div style={allAppStyle}>
                 <h1 style={pageHeaderStyle} >LTPSC Workflows</h1>
                 <div style={greetingStyle} >{`Hello ${this.listDataStore.currentUser.name}`}</div>
-                {/*<div style={tableHeaderContainer}>
-                    <SelectField style={selectViewStyle} value={this.listDataStore.currentView.stageName} floatingLabelText='Select View' onChange={(this.onSelectView)} >
-                    {
-                        this.listDataStore.currentUserPermittedViews.map((view, index) => (
-                            <MenuItem key={index} value={view.stageName} primaryText={view.stageName} />
-                        ))
-                    }
-                    </SelectField>
-                    <h3 style={tableTitleStyle} >Current View: {this.listDataStore.currentView.stageName}</h3>
-                </div>*/}
 
                 <h2>Navigate to View</h2>
 
@@ -76,7 +63,7 @@ export class AppContainer extends React.Component<any, any> {
                     && <RaisedButton primary={true} style={EditItemButtonStyle} onClick={this.listDataStore.displayExisitingItemForm} label='Edit Item' />
                 }
 
-                <Snackbar open={this.listDataStore.isShowFormError} message={this.listDataStore.editFormErrorMessage} />
+                <Snackbar open={this.listDataStore.errorMessage !== null} message={this.listDataStore.errorMessage || ''} />
             </div>
         )
     }

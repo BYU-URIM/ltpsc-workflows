@@ -58,9 +58,20 @@ export class EditItemForm extends React.Component<any, any> {
                                 }
                                 </SelectField>
                             )
+                        } else if(column.type === 'lookup') {
+                            return (
+                                <SelectField value={this.listDataStore.currentEditItem[column.spName]} key={index} fullWidth={true} 
+                                    disabled={column.displayOnly} onChange={(e, key, payload) => updateFunction(e, payload)} floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } >
+                                {
+                                    Object.keys(this.listDataStore.lookupValues.get(column.spName)).map((lookupId, index) => (
+                                        <MenuItem key={index} value={Number(lookupId)} primaryText={this.listDataStore.lookupValues.get(column.spName)[lookupId]} />
+                                    ))
+                                }
+                                </SelectField>
+                            )
                         } else if(column.type === 'checkbox') {
                             return <Checkbox key={index} style={checkboxStyle} label={column.displayName} disabled={column.displayOnly}
-                                        onCheck={updateFunction} value={this.listDataStore.currentEditItem[column.spName] || ''} />
+                                        onCheck={updateFunction} checked={!!this.listDataStore.currentEditItem[column.spName]} />
                         } else if(column.type === 'datetime') {
                             return <TextField key={index} fullWidth={true} floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } onChange={updateFunction}
                                         disabled={column.displayOnly} value={this.listDataStore.currentEditItem[column.spName] || ''} errorText={validationState[column.spName]} />

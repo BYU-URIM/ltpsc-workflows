@@ -16,7 +16,7 @@ export class ListItem {
     @observable Catalog_x0020_Review_x0020_Date: string
     @observable Cataloging_x0020_Date: string
     @observable Cataloging_x0020_Done: boolean
-    @observable Collecting_x0020_Area: string
+    @observable Collecting_x0020_AreaId: number
     @observable Collection_x0020_Location_x0020_: boolean
     @observable Collection_x0020_Management_x002: boolean
     @observable Collection_x0020_Management_x0020: string

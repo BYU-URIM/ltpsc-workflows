@@ -43,20 +43,27 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Images\favicon.ico" />
+    <Content Include="Pages\index.html" />
+    <Content Include="Scripts\dist\bundle.js" />
+    <Content Include="Scripts\dist\workbench.html" />
+    <Content Include="Scripts\Elements.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="packages.config" />
     <None Include="Pages\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{5eedfef8-fd83-4f99-985e-1678c20e23e9}</SharePointProjectItemId>
     </None>
-    <Content Include="Pages\Elements.xml" />
+    <Content Include="Pages\Elements.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Pages\index.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\build\bundle.js.map" />
+    <None Include="Scripts\dist\bundle.js.map" />
     <None Include="Scripts\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{7c31dda4-5c8b-4bb8-a61c-b336e2441818}</SharePointProjectItemId>
     </None>
-    <Content Include="Scripts\build\bundle.js" />
-    <Content Include="Scripts\Elements.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\SharePointProjectItem.spdata">
