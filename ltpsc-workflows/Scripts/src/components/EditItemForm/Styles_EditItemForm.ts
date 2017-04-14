@@ -9,5 +9,17 @@ export const checkboxStyle = {
 }
 
 export const formButtonStyle = {
-    marginTop: 15
+    marginTop: 15,
+    marginRight: 20,
+    display: 'inline-block'
+}
+
+export const suspensionFormButtonStyle = {
+    marginTop: 15,
+    display: 'inline-block'
+}
+
+export const suspensionDialogueStyle = {
+    width: '35%',
+    margin: '0 auto'
 }

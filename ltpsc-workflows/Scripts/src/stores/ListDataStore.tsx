@@ -24,8 +24,9 @@ export default class ListDataStore {
     @observable selectedItemIndex: number = null
     @observable lookupValues: Map<string, ILookupOptionDictionary> = new Map()
     @observable errorMessage: string = null
-
-    @observable private editFormDisplayStatus: EditFormStatusEnum = EditFormStatusEnum.CLOSED
+    @observable asyncPendingLockout: boolean = false
+    @observable isDisplaySuspensionDialogue: boolean = false
+    @observable editFormDisplayStatus: EditFormStatusEnum = EditFormStatusEnum.CLOSED
     
     @computed get currentViewSPNames() {
         return this.currentView.columns.map((column) => column.spName)
@@ -68,7 +69,7 @@ export default class ListDataStore {
 
     @action displayExisitingItemForm() {
         // copy the list item so that all changes are made to a temporary item
-        this.currentEditItem = Object.assign({}, this.currentViewListItems[this.selectedItemIndex])
+        this.currentEditItem = Object.assign(new ListItem(), this.currentViewListItems[this.selectedItemIndex])
         this.editFormDisplayStatus = EditFormStatusEnum.DISPLAYING_EXISTING
     }
 
@@ -77,22 +78,58 @@ export default class ListDataStore {
         this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
     }
 
-    @action submitEditItemForm() {
-        if(this.canSubmitCurrentItem) {
-            this.saveEditItemForm()
-        } else {
-            this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`)
+    @action async submitEditItemForm() {
+        if(!this.canSubmitCurrentItemToSameOrLowerStage) {
+            this.raiseFormError()
+            return
+        }
+
+        const saveInfo = await this.saveEditItemForm() // saveInfo will be null if there was an error saving
+        if(saveInfo) {
+            this.onSuccessfullSave(saveInfo)
         }
     }
 
-    @action submitEditItemToNextStage() {
-        if(this.canSubmitCurrentItem) {
-            this.currentEditItem.Stage = this.currentEditItemNextStage
-            this.saveEditItemForm()
-        } else {
-            this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`)
+    @action async submitEditItemToNextStage() {
+        if(!this.canSubmitCurrentItemToHigherStage) {
+            this.raiseFormError()
+            return
+        }
+
+        const saveInfo = await this.saveEditItemForm(this.currentEditItemNextStage)
+        if(saveInfo) {
+            runInAction(() => this.currentEditItem.Stage = this.currentEditItemNextStage)
+            this.onSuccessfullSave(saveInfo)
         }
     }
+
+    @action async returnEditItemToPreviousStage() {
+        if(!this.canSubmitCurrentItemToSameOrLowerStage) {
+            this.raiseFormError()
+            return
+        }
+
+        const saveInfo = await this.saveEditItemForm(this.currentEditItemPreviousstage)
+        if(saveInfo) {
+            runInAction(() => this.currentEditItem.Stage = this.currentEditItemPreviousstage)
+            this.onSuccessfullSave(saveInfo)
+        }
+    }
+
+    @action async suspendEditItem() {
+        if(!this.canSubmitCurrentItemToSameOrLowerStage) {
+            this.raiseFormError()
+            return
+        }
+
+        this.closeSuspensionDialogue()
+        const saveInfo = await this.saveEditItemForm('Suspended')
+        if(saveInfo) {
+            runInAction(() => this.currentEditItem.Stage = 'Suspended') // write stage to cached listItem once valid save call occurs
+            this.onSuccessfullSave(saveInfo)
+        }
+    }
+
 
     @action updateCurrentEditItem(key: string, value: any) {
         this.currentEditItem[key] = value
@@ -103,17 +140,30 @@ export default class ListDataStore {
         this.selectedItemIndex = indexSingletonArray.length > 0 ? indexSingletonArray[0] : null
     }
 
-    @action returnEditItemToPreviousStage() {
-        this.currentEditItem.Stage = this.currentEditItemPreviousstage
-        this.submitEditItemForm()
-    }
-
     @action raiseError(message: string, errorMetadata?: any) {
         if(errorMetadata) console.log(errorMetadata)
         this.errorMessage = message
         setTimeout(action(() => {
             this.errorMessage = null
         }), 5000)
+    }
+
+    // specifically raises form error including error count and proper formatting
+    @action private raiseFormError() {
+        this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`)
+    }
+
+    @action private onAsyncError(error: any): void {
+        this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error)
+        this.asyncPendingLockout = false
+    }
+
+    @action openSuspensionDialogue(): void {
+        this.isDisplaySuspensionDialogue = true
+    }
+
+    @action closeSuspensionDialogue(): void {
+        this.isDisplaySuspensionDialogue = false
     }
 
     @computed get currentEditItemValidationState() {
@@ -137,7 +187,8 @@ export default class ListDataStore {
         return Object.keys(this.currentEditItemValidationState).length
     }
 
-    @computed get canSubmitCurrentItem(): boolean {
+    // strictist validation rules - must not be any form errors AND all required fields must be filled in
+    @computed get canSubmitCurrentItemToHigherStage(): boolean {
         if(Object.keys(this.currentEditItemValidationState).length > 0) {
             return false
         } else if(this.requiredColumnsFromCurrentView.filter((column) => !this.currentEditItem[column.spName]).length > 0) {
@@ -147,13 +198,22 @@ export default class ListDataStore {
         }
     }
 
-    @computed get currentEditItemNextStage(): string {
-        const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage)
+    // less strict validation rules - must not be any form errors
+    @computed get canSubmitCurrentItemToSameOrLowerStage(): boolean {
+        if(Object.keys(this.currentEditItemValidationState).length > 0) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    @computed get currentEditItemNextStage(): StageName {
+        const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage as StageName)
         return stageIndex !== StageOrder.length - 1 ? StageOrder[stageIndex + 1] : null
     }
 
-    @computed get currentEditItemPreviousstage(): string {
-        const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage)
+    @computed get currentEditItemPreviousstage(): StageName {
+        const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage as StageName)
         return stageIndex !== 0 ? StageOrder[stageIndex - 1] : null
     }
 
@@ -183,20 +243,40 @@ export default class ListDataStore {
     }
 
 
-    private saveEditItemForm() {
-        if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW) {
-            PersistorService.createListItem(this.currentEditItem).then(action(() => {
-                this.listitems.push(this.currentEditItem)
-                this.currentEditItem = DEFAULT_LIST_ITEM
-                this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
-            })).catch(action((error) => this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error)))
-        } else if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING) {
-            PersistorService.updateListItem(this.currentEditItem).then(action(() => {
-                let staleItemIndex: number = this.listitems.findIndex((listItem) => this.selectedItemID === listItem.Id)
-                this.listitems[staleItemIndex] = this.currentEditItem
-                this.currentEditItem = DEFAULT_LIST_ITEM
-                this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
-            })).catch(action((error) => this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error)))
+    // this function is in charge of attempting to save a form to the server and handling async errors
+    // @PARAM optional pendingStage, meaning if there is a pending stage change, it can be attempted to save on the server without the caller having
+    // to update the cached listItem in memory prematurely - the caller can wait untill a successfull save has been detected
+    @action private async saveEditItemForm(pendingStage?: StageName): Promise<any> {
+        // await calls to server
+        try {
+            this.asyncPendingLockout = true
+            const saveItem: ListItem = pendingStage ? Object.assign({}, this.currentEditItem, {Stage: pendingStage}) : Object.assign({}, this.currentEditItem)
+
+            const persistorFunction = this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW ? PersistorService.createListItem : PersistorService.updateListItem
+            const saveInfo = await persistorFunction(saveItem)
+            return saveInfo
+
+        } catch(error) {
+            this.onAsyncError(error)
+            return null
+        } finally {
+            runInAction(() => this.asyncPendingLockout = false)
         }
+
     }
+
+    // private helper functions managing clean after successfull save
+    @action private onSuccessfullSave(saveInfo: any) {
+        this.currentEditItem.Id = saveInfo.Id
+        if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW) {
+            this.listitems.push(this.currentEditItem)
+        } else if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING) {
+            let staleItemIndex: number = this.listitems.findIndex((listItem) => this.selectedItemID === listItem.Id)
+            this.listitems[staleItemIndex] = this.currentEditItem
+         }
+
+        this.currentEditItem = DEFAULT_LIST_ITEM
+        this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
+    }
+
 }

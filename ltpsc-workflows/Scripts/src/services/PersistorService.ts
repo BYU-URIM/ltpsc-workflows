@@ -54,12 +54,14 @@ export async function fetchLookupValues(): Promise<Map<string, ILookupOptionDict
 
 export async function createListItem(listItem: ListItem) {
     const rawSecurityInfo = await dao.fetchSecurityValidation()
-    await dao.createListItemOnServer(listItem, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
+    const createInfo = await dao.createListItemOnServer(listItem, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
+    return createInfo.d
 }
 
 export async function updateListItem(listItem: ListItem) {
     const rawSecurityInfo = await dao.fetchSecurityValidation()
     await dao.updateListItemOnServer(listItem, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
+    return listItem
 }
 
 
