@@ -35760,6 +35760,8 @@
 	        this.selectedItemIndex = null;
 	        this.lookupValues = new Map();
 	        this.errorMessage = null;
+	        this.asyncPendingLockout = false;
+	        this.isDisplaySuspensionDialogue = false;
 	        this.editFormDisplayStatus = EditFormStatusEnum_1.EditFormStatusEnum.CLOSED;
 	    }
 	    get currentViewSPNames() {
@@ -35794,7 +35796,7 @@
 	        });
 	    }
 	    displayExisitingItemForm() {
-	        this.currentEditItem = Object.assign({}, this.currentViewListItems[this.selectedItemIndex]);
+	        this.currentEditItem = Object.assign(new ListItem_1.ListItem(), this.currentViewListItems[this.selectedItemIndex]);
 	        this.editFormDisplayStatus = EditFormStatusEnum_1.EditFormStatusEnum.DISPLAYING_EXISTING;
 	    }
 	    closeEditItemForm() {
@@ -35802,31 +35804,62 @@
 	        this.editFormDisplayStatus = EditFormStatusEnum_1.EditFormStatusEnum.CLOSED;
 	    }
 	    submitEditItemForm() {
-	        if (this.canSubmitCurrentItem) {
-	            this.saveEditItemForm();
-	        }
-	        else {
-	            this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`);
-	        }
+	        return __awaiter(this, void 0, void 0, function* () {
+	            if (!this.canSubmitCurrentItemToSameOrLowerStage) {
+	                this.raiseFormError();
+	                return;
+	            }
+	            const saveInfo = yield this.saveEditItemForm();
+	            if (saveInfo) {
+	                this.onSuccessfullSave(saveInfo);
+	            }
+	        });
 	    }
 	    submitEditItemToNextStage() {
-	        if (this.canSubmitCurrentItem) {
-	            this.currentEditItem.Stage = this.currentEditItemNextStage;
-	            this.saveEditItemForm();
-	        }
-	        else {
-	            this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`);
-	        }
+	        return __awaiter(this, void 0, void 0, function* () {
+	            if (!this.canSubmitCurrentItemToHigherStage) {
+	                this.raiseFormError();
+	                return;
+	            }
+	            const saveInfo = yield this.saveEditItemForm(this.currentEditItemNextStage);
+	            if (saveInfo) {
+	                mobx_1.runInAction(() => this.currentEditItem.Stage = this.currentEditItemNextStage);
+	                this.onSuccessfullSave(saveInfo);
+	            }
+	        });
+	    }
+	    returnEditItemToPreviousStage() {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            if (!this.canSubmitCurrentItemToSameOrLowerStage) {
+	                this.raiseFormError();
+	                return;
+	            }
+	            const saveInfo = yield this.saveEditItemForm(this.currentEditItemPreviousstage);
+	            if (saveInfo) {
+	                mobx_1.runInAction(() => this.currentEditItem.Stage = this.currentEditItemPreviousstage);
+	                this.onSuccessfullSave(saveInfo);
+	            }
+	        });
+	    }
+	    suspendEditItem() {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            if (!this.canSubmitCurrentItemToSameOrLowerStage) {
+	                this.raiseFormError();
+	                return;
+	            }
+	            this.closeSuspensionDialogue();
+	            const saveInfo = yield this.saveEditItemForm('Suspended');
+	            if (saveInfo) {
+	                mobx_1.runInAction(() => this.currentEditItem.Stage = 'Suspended');
+	                this.onSuccessfullSave(saveInfo);
+	            }
+	        });
 	    }
 	    updateCurrentEditItem(key, value) {
 	        this.currentEditItem[key] = value;
 	    }
 	    updateSelectedItemIndex(indexSingletonArray) {
 	        this.selectedItemIndex = indexSingletonArray.length > 0 ? indexSingletonArray[0] : null;
-	    }
-	    returnEditItemToPreviousStage() {
-	        this.currentEditItem.Stage = this.currentEditItemPreviousstage;
-	        this.submitEditItemForm();
 	    }
 	    raiseError(message, errorMetadata) {
 	        if (errorMetadata)
@@ -35835,6 +35868,19 @@
 	        setTimeout(mobx_1.action(() => {
 	            this.errorMessage = null;
 	        }), 5000);
+	    }
+	    raiseFormError() {
+	        this.raiseError(`${this.formErrorCount || 1} form error${this.formErrorCount > 1 ? 's' : ''} - please fill out all required fields.`);
+	    }
+	    onAsyncError(error) {
+	        this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error);
+	        this.asyncPendingLockout = false;
+	    }
+	    openSuspensionDialogue() {
+	        this.isDisplaySuspensionDialogue = true;
+	    }
+	    closeSuspensionDialogue() {
+	        this.isDisplaySuspensionDialogue = false;
 	    }
 	    get currentEditItemValidationState() {
 	        return this.currentView.columns.reduce((accumulator, column) => {
@@ -35851,11 +35897,19 @@
 	    get formErrorCount() {
 	        return Object.keys(this.currentEditItemValidationState).length;
 	    }
-	    get canSubmitCurrentItem() {
+	    get canSubmitCurrentItemToHigherStage() {
 	        if (Object.keys(this.currentEditItemValidationState).length > 0) {
 	            return false;
 	        }
 	        else if (this.requiredColumnsFromCurrentView.filter((column) => !this.currentEditItem[column.spName]).length > 0) {
+	            return false;
+	        }
+	        else {
+	            return true;
+	        }
+	    }
+	    get canSubmitCurrentItemToSameOrLowerStage() {
+	        if (Object.keys(this.currentEditItemValidationState).length > 0) {
 	            return false;
 	        }
 	        else {
@@ -35887,22 +35941,35 @@
 	    get selectedItemID() {
 	        return this.currentViewListItems[this.selectedItemIndex].Id;
 	    }
-	    saveEditItemForm() {
+	    saveEditItemForm(pendingStage) {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            try {
+	                this.asyncPendingLockout = true;
+	                const saveItem = pendingStage ? Object.assign({}, this.currentEditItem, { Stage: pendingStage }) : Object.assign({}, this.currentEditItem);
+	                const persistorFunction = this.editFormDisplayStatus === EditFormStatusEnum_1.EditFormStatusEnum.DISPLAYING_NEW ? PersistorService.createListItem : PersistorService.updateListItem;
+	                const saveInfo = yield persistorFunction(saveItem);
+	                return saveInfo;
+	            }
+	            catch (error) {
+	                this.onAsyncError(error);
+	                return null;
+	            }
+	            finally {
+	                mobx_1.runInAction(() => this.asyncPendingLockout = false);
+	            }
+	        });
+	    }
+	    onSuccessfullSave(saveInfo) {
+	        this.currentEditItem.Id = saveInfo.Id;
 	        if (this.editFormDisplayStatus === EditFormStatusEnum_1.EditFormStatusEnum.DISPLAYING_NEW) {
-	            PersistorService.createListItem(this.currentEditItem).then(mobx_1.action(() => {
-	                this.listitems.push(this.currentEditItem);
-	                this.currentEditItem = ListItem_1.DEFAULT_LIST_ITEM;
-	                this.editFormDisplayStatus = EditFormStatusEnum_1.EditFormStatusEnum.CLOSED;
-	            })).catch(mobx_1.action((error) => this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error)));
+	            this.listitems.push(this.currentEditItem);
 	        }
 	        else if (this.editFormDisplayStatus === EditFormStatusEnum_1.EditFormStatusEnum.DISPLAYING_EXISTING) {
-	            PersistorService.updateListItem(this.currentEditItem).then(mobx_1.action(() => {
-	                let staleItemIndex = this.listitems.findIndex((listItem) => this.selectedItemID === listItem.Id);
-	                this.listitems[staleItemIndex] = this.currentEditItem;
-	                this.currentEditItem = ListItem_1.DEFAULT_LIST_ITEM;
-	                this.editFormDisplayStatus = EditFormStatusEnum_1.EditFormStatusEnum.CLOSED;
-	            })).catch(mobx_1.action((error) => this.raiseError('There was an error talking to the SharePoint Server.  Please try again.', error)));
+	            let staleItemIndex = this.listitems.findIndex((listItem) => this.selectedItemID === listItem.Id);
+	            this.listitems[staleItemIndex] = this.currentEditItem;
 	        }
+	        this.currentEditItem = ListItem_1.DEFAULT_LIST_ITEM;
+	        this.editFormDisplayStatus = EditFormStatusEnum_1.EditFormStatusEnum.CLOSED;
 	    }
 	};
 	__decorate([
@@ -35933,6 +36000,14 @@
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
 	], ListDataStore.prototype, "errorMessage", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', Boolean)
+	], ListDataStore.prototype, "asyncPendingLockout", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', Boolean)
+	], ListDataStore.prototype, "isDisplaySuspensionDialogue", void 0);
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', (typeof (_d = typeof EditFormStatusEnum_1.EditFormStatusEnum !== 'undefined' && EditFormStatusEnum_1.EditFormStatusEnum) === 'function' && _d) || Object)
@@ -35979,14 +36054,26 @@
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
 	    __metadata('design:paramtypes', []), 
-	    __metadata('design:returntype', void 0)
+	    __metadata('design:returntype', Promise)
 	], ListDataStore.prototype, "submitEditItemForm", null);
 	__decorate([
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
 	    __metadata('design:paramtypes', []), 
-	    __metadata('design:returntype', void 0)
+	    __metadata('design:returntype', Promise)
 	], ListDataStore.prototype, "submitEditItemToNextStage", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', Promise)
+	], ListDataStore.prototype, "returnEditItemToPreviousStage", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', Promise)
+	], ListDataStore.prototype, "suspendEditItem", null);
 	__decorate([
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
@@ -36002,15 +36089,33 @@
 	__decorate([
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
-	    __metadata('design:paramtypes', []), 
-	    __metadata('design:returntype', void 0)
-	], ListDataStore.prototype, "returnEditItemToPreviousStage", null);
-	__decorate([
-	    mobx_1.action, 
-	    __metadata('design:type', Function), 
 	    __metadata('design:paramtypes', [String, Object]), 
 	    __metadata('design:returntype', void 0)
 	], ListDataStore.prototype, "raiseError", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', void 0)
+	], ListDataStore.prototype, "raiseFormError", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', [Object]), 
+	    __metadata('design:returntype', void 0)
+	], ListDataStore.prototype, "onAsyncError", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', void 0)
+	], ListDataStore.prototype, "openSuspensionDialogue", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', void 0)
+	], ListDataStore.prototype, "closeSuspensionDialogue", null);
 	__decorate([
 	    mobx_1.computed, 
 	    __metadata('design:type', Object)
@@ -36022,14 +36127,18 @@
 	__decorate([
 	    mobx_1.computed, 
 	    __metadata('design:type', Boolean)
-	], ListDataStore.prototype, "canSubmitCurrentItem", null);
+	], ListDataStore.prototype, "canSubmitCurrentItemToHigherStage", null);
 	__decorate([
 	    mobx_1.computed, 
-	    __metadata('design:type', String)
+	    __metadata('design:type', Boolean)
+	], ListDataStore.prototype, "canSubmitCurrentItemToSameOrLowerStage", null);
+	__decorate([
+	    mobx_1.computed, 
+	    __metadata('design:type', (typeof (_e = typeof Stages_1.StageName !== 'undefined' && Stages_1.StageName) === 'function' && _e) || Object)
 	], ListDataStore.prototype, "currentEditItemNextStage", null);
 	__decorate([
 	    mobx_1.computed, 
-	    __metadata('design:type', String)
+	    __metadata('design:type', (typeof (_f = typeof Stages_1.StageName !== 'undefined' && Stages_1.StageName) === 'function' && _f) || Object)
 	], ListDataStore.prototype, "currentEditItemPreviousstage", null);
 	__decorate([
 	    mobx_1.computed, 
@@ -36047,6 +36156,18 @@
 	    mobx_1.computed, 
 	    __metadata('design:type', Object)
 	], ListDataStore.prototype, "selectedItemID", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', [(typeof (_g = typeof Stages_1.StageName !== 'undefined' && Stages_1.StageName) === 'function' && _g) || Object]), 
+	    __metadata('design:returntype', Object)
+	], ListDataStore.prototype, "saveEditItemForm", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', [Object]), 
+	    __metadata('design:returntype', void 0)
+	], ListDataStore.prototype, "onSuccessfullSave", null);
 	ListDataStore = __decorate([
 	    core_decorators_1.autobind,
 	    inversify_1.injectable(), 
@@ -36054,7 +36175,7 @@
 	], ListDataStore);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = ListDataStore;
-	var _a, _b, _c, _d;
+	var _a, _b, _c, _d, _e, _f, _g;
 
 
 /***/ },
@@ -38741,7 +38862,7 @@
 	        new Cols.ProcessingLevel().makeRequired(),
 	        new Cols.ConditionReportRecommendations(),
 	        new Cols.ProposedSeriesArrangement().makeRequired(),
-	        new Cols.Deaccession(),
+	        new Cols.Deaccession().setDefaultValue(false),
 	        new Cols.DescriptionOfProposedDeaccession(),
 	        new Cols.Restrictions()
 	    ]
@@ -39714,7 +39835,8 @@
 	function createListItem(listItem) {
 	    return __awaiter(this, void 0, void 0, function* () {
 	        const rawSecurityInfo = yield dao.fetchSecurityValidation();
-	        yield dao.createListItemOnServer(listItem, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue);
+	        const createInfo = yield dao.createListItemOnServer(listItem, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue);
+	        return createInfo.d;
 	    });
 	}
 	exports.createListItem = createListItem;
@@ -39722,6 +39844,7 @@
 	    return __awaiter(this, void 0, void 0, function* () {
 	        const rawSecurityInfo = yield dao.fetchSecurityValidation();
 	        yield dao.updateListItemOnServer(listItem, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue);
+	        return listItem;
 	    });
 	}
 	exports.updateListItem = updateListItem;
@@ -39758,7 +39881,7 @@
 	exports.genericGetByEndpoint = genericGetByEndpoint;
 	function fetchListItemsFromServer() {
 	    return jquery_1.ajax({
-	        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?@target='${hostWebUrl}'`,
+	        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?$filter=(Stage ne 'Complete') and (Stage ne 'Suspended')&@target='${hostWebUrl}'`,
 	        method: 'GET',
 	        headers: { 'Accept': 'application/json; odata=verbose' },
 	    });
@@ -50443,7 +50566,8 @@
 	    'Catalog Collection',
 	    'Uploading Finding Aid',
 	    'Final Curator Review',
-	    'Labeling Barcode And Locations Assigned'
+	    'Labeling Barcode And Locations Assigned',
+	    'Complete'
 	];
 
 
@@ -57593,17 +57717,18 @@
 	const Checkbox_1 = __webpack_require__(431);
 	const Styles_EditItemForm_1 = __webpack_require__(526);
 	const RaisedButton_1 = __webpack_require__(527);
+	const EditFormStatusEnum_1 = __webpack_require__(421);
 	let EditItemForm = class EditItemForm extends React.Component {
 	    render() {
 	        const actions = [
-	            React.createElement(FlatButton_1.default, {label: "Cancel", primary: true, onClick: this.listDataStore.closeEditItemForm}),
-	            React.createElement(FlatButton_1.default, {label: "Save", primary: true, onClick: this.listDataStore.submitEditItemForm})
+	            React.createElement(FlatButton_1.default, {disabled: this.listDataStore.asyncPendingLockout, label: "Cancel", primary: true, onClick: this.listDataStore.closeEditItemForm}),
+	            React.createElement(FlatButton_1.default, {disabled: this.listDataStore.asyncPendingLockout, label: "Save", primary: true, onClick: this.listDataStore.submitEditItemForm})
 	        ];
 	        const validationState = this.listDataStore.currentEditItemValidationState;
 	        return (React.createElement(Dialog_1.default, {autoScrollBodyContent: true, title: `${this.listDataStore.currentView.stageName}: New Item`, actions: actions, modal: true, open: this.listDataStore.isDisplayEditItemForm}, 
 	            React.createElement("div", {style: Styles_EditItemForm_1.inputFieldStyles}, 
 	                this.listDataStore.currentEditItemPreviousstage &&
-	                    (React.createElement(RaisedButton_1.default, {style: Styles_EditItemForm_1.formButtonStyle, label: `return to previous stage - ${this.listDataStore.currentEditItemPreviousstage}`, onClick: this.listDataStore.returnEditItemToPreviousStage})), 
+	                    (React.createElement(RaisedButton_1.default, {style: Styles_EditItemForm_1.formButtonStyle, label: `return to previous stage - ${this.listDataStore.currentEditItemPreviousstage}`, onClick: this.listDataStore.returnEditItemToPreviousStage, disabled: this.listDataStore.asyncPendingLockout})), 
 	                this.listDataStore.currentView.columns.map((column, index) => {
 	                    const updateFunction = (e, newValue) => this.listDataStore.updateCurrentEditItem(column.spName, newValue);
 	                    if (column.type === 'text') {
@@ -57629,8 +57754,13 @@
 	                    }
 	                }), 
 	                this.listDataStore.currentEditItemNextStage &&
-	                    (React.createElement(RaisedButton_1.default, {style: Styles_EditItemForm_1.formButtonStyle, label: `submit to next stage - ${this.listDataStore.currentEditItemNextStage}`, onClick: this.listDataStore.submitEditItemToNextStage})))
-	        ));
+	                    (React.createElement(RaisedButton_1.default, {style: Styles_EditItemForm_1.formButtonStyle, label: `submit to next stage - ${this.listDataStore.currentEditItemNextStage}`, onClick: this.listDataStore.submitEditItemToNextStage, disabled: this.listDataStore.asyncPendingLockout})), 
+	                this.listDataStore.editFormDisplayStatus === EditFormStatusEnum_1.EditFormStatusEnum.DISPLAYING_EXISTING &&
+	                    React.createElement(RaisedButton_1.default, {label: 'suspend item', backgroundColor: '#EEB3B3', onClick: this.listDataStore.openSuspensionDialogue, disabled: this.listDataStore.asyncPendingLockout})), 
+	            React.createElement(Dialog_1.default, {contentStyle: Styles_EditItemForm_1.suspensionDialogueStyle, open: this.listDataStore.isDisplaySuspensionDialogue, title: 'Confirm', modal: true}, 
+	                React.createElement("div", null, 'Are you sure you want to suspend the current item?'), 
+	                React.createElement(RaisedButton_1.default, {label: 'Yes', style: Styles_EditItemForm_1.formButtonStyle, onClick: this.listDataStore.suspendEditItem}), 
+	                React.createElement(RaisedButton_1.default, {label: 'No', style: Styles_EditItemForm_1.formButtonStyle, onClick: this.listDataStore.closeSuspensionDialogue}))));
 	    }
 	};
 	__decorate([
@@ -66277,7 +66407,17 @@
 	    marginTop: 20
 	};
 	exports.formButtonStyle = {
-	    marginTop: 15
+	    marginTop: 15,
+	    marginRight: 20,
+	    display: 'inline-block'
+	};
+	exports.suspensionFormButtonStyle = {
+	    marginTop: 15,
+	    display: 'inline-block'
+	};
+	exports.suspensionDialogueStyle = {
+	    width: '35%',
+	    margin: '0 auto'
 	};
 
 

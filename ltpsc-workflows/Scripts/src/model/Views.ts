@@ -36,7 +36,7 @@ export const ProcessingPlan: IView = {
         new Cols.ProcessingLevel().makeRequired(), 
         new Cols.ConditionReportRecommendations(),
         new Cols.ProposedSeriesArrangement().makeRequired(), 
-        new Cols.Deaccession(),
+        new Cols.Deaccession().setDefaultValue(false),
         new Cols.DescriptionOfProposedDeaccession(),
         new Cols.Restrictions()
     ]

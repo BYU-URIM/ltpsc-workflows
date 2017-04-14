@@ -24,7 +24,7 @@ export function genericGetByEndpoint(endpoint: string): JQueryXHR {
 
 export function fetchListItemsFromServer(): JQueryXHR {
     return ajax({
-        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?@target='${hostWebUrl}'`,
+        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?$filter=(Stage ne 'Complete') and (Stage ne 'Suspended')&@target='${hostWebUrl}'`,
         method: 'GET',
         headers: { 'Accept': 'application/json; odata=verbose' },
     })

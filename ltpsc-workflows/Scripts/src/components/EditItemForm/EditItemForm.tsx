@@ -3,14 +3,15 @@ import { ListDataTable } from '../ListDataTable/ListDataTable';
 import { inject } from '../../utils/inversify.config'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-import ListDataStore from "../../stores/ListDataStore";
+import ListDataStore from '../../stores/ListDataStore';
 import { observer } from 'mobx-react';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import Checkbox from 'material-ui/Checkbox';
-import { inputFieldStyles, checkboxStyle, formButtonStyle } from './Styles_EditItemForm';
+import { inputFieldStyles, checkboxStyle, formButtonStyle, suspensionFormButtonStyle, suspensionDialogueStyle } from './Styles_EditItemForm';
 import RaisedButton from 'material-ui/RaisedButton';
+import { EditFormStatusEnum } from '../../model/EditFormStatusEnum';
 
 
 @observer
@@ -22,8 +23,8 @@ export class EditItemForm extends React.Component<any, any> {
 
     render() {
         const actions = [
-            <FlatButton label="Cancel" primary={true} onClick={this.listDataStore.closeEditItemForm} />,
-            <FlatButton label="Save" primary={true} onClick={this.listDataStore.submitEditItemForm} />
+            <FlatButton disabled={this.listDataStore.asyncPendingLockout} label="Cancel" primary={true} onClick={this.listDataStore.closeEditItemForm} />,
+            <FlatButton disabled={this.listDataStore.asyncPendingLockout} label="Save" primary={true} onClick={this.listDataStore.submitEditItemForm} />
         ]
 
         const validationState = this.listDataStore.currentEditItemValidationState
@@ -33,7 +34,8 @@ export class EditItemForm extends React.Component<any, any> {
                 <div style={inputFieldStyles}>
                 {
                     this.listDataStore.currentEditItemPreviousstage &&
-                    (<RaisedButton style={formButtonStyle} label={`return to previous stage - ${this.listDataStore.currentEditItemPreviousstage}`} onClick={this.listDataStore.returnEditItemToPreviousStage} /> )
+                    (<RaisedButton style={formButtonStyle} label={`return to previous stage - ${this.listDataStore.currentEditItemPreviousstage}`} 
+                        onClick={this.listDataStore.returnEditItemToPreviousStage} disabled={this.listDataStore.asyncPendingLockout} /> )
                 }
                 {
                     this.listDataStore.currentView.columns.map((column, index) => {
@@ -83,9 +85,22 @@ export class EditItemForm extends React.Component<any, any> {
                 }
                 {
                     this.listDataStore.currentEditItemNextStage &&
-                    (<RaisedButton style={formButtonStyle} label={`submit to next stage - ${this.listDataStore.currentEditItemNextStage}`} onClick={this.listDataStore.submitEditItemToNextStage} /> )
+                    (<RaisedButton style={formButtonStyle} label={`submit to next stage - ${this.listDataStore.currentEditItemNextStage}`} 
+                        onClick={this.listDataStore.submitEditItemToNextStage} disabled={this.listDataStore.asyncPendingLockout} /> )
+                }
+                {
+                    this.listDataStore.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING &&
+                    <RaisedButton label={'suspend item'} backgroundColor='#EEB3B3' onClick={this.listDataStore.openSuspensionDialogue} disabled={this.listDataStore.asyncPendingLockout} />
                 }
                 </div>
+
+                {/* Nested Suspension Confirmation Dialogue */}
+                <Dialog contentStyle={suspensionDialogueStyle} open={this.listDataStore.isDisplaySuspensionDialogue} title='Confirm' modal={true} >
+                    <div>{'Are you sure you want to suspend the current item?'}</div>
+                    <RaisedButton label='Yes' style={formButtonStyle} onClick={this.listDataStore.suspendEditItem} />
+                    <RaisedButton label='No' style={formButtonStyle} onClick={this.listDataStore.closeSuspensionDialogue} />
+                </Dialog>
+
             </Dialog>
         )
     }
