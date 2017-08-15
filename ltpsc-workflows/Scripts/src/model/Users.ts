@@ -5,15 +5,15 @@ export class IUser {
     name: string
     email: string
     netId: string
-    group: IGroup
+    groups: IGroup[]
 }
 
 export const DEFAULT_USER: IUser = {
     name: 'User',
     email: 'n/a',
     netId: 'n/a',
-    group: {
+    groups: [{
         name: 'Default Group',
         permittedViews: []
-    }
+    }]
 }

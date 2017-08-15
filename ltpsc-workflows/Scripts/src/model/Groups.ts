@@ -38,3 +38,8 @@ export const Cataloging: IGroup = {
     name: 'Cataloging',
     permittedViews: [ Views.AuthorityWorkReview, Views.CatalogCollection, Views.UploadingFindingAid ]
 }
+
+export const AdminOnly: IGroup = {
+    name: 'Admin Only',
+    permittedViews: [ Views.Suspended ]
+}

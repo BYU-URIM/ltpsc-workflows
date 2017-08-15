@@ -24,3 +24,11 @@ export const StageOrder: Array<StageName> = [
     'Labeling Barcode And Locations Assigned',
     'Complete'
 ]
+
+// represents bundle of data to pass to the server during a pending save
+// separate from the rest of the listItemData for easy roll back if save fails
+export interface IPendingStageData {
+    Stage: StageName,
+    [movedToColumnName: string]: string,
+    LastStageBeforeSuspension?: string
+}

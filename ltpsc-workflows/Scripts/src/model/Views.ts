@@ -60,7 +60,6 @@ export const ReviewProcessingPlan: IView = {
         new Cols.Restrictions(),
         new Cols.ProcessPlanRevisionDate().makeDisplayOnly(),
         new Cols.ApproveProcessingPlan(),
-        new Cols.ApproveProcessingPlan(),
         new Cols.CommentsOnProcessingPlan()
     ]
 }
@@ -316,6 +315,16 @@ export const LabelingBarcodeAndLocationAssigned: IView = {
         new Cols.BarcodingComplete().makeRequired(),
         new Cols.CollectionLocationAssignmentDate().setDefaultValue(getFormattedDate()).makeRequired(),
         new Cols.CollectionLocationAssigned().makeRequired()
+    ]
+}
+
+export const Suspended: IView = {
+    stageName: 'Suspended',
+    columns: [
+        new Cols.Title().makeDisplayOnly(),
+        new Cols.AccessionNumber().makeDisplayOnly(),
+        new Cols.CallNumber().makeDisplayOnly(),
+        new Cols.LastStageBeforeSuspension().makeDisplayOnly()
     ]
 }
 

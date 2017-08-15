@@ -14,7 +14,7 @@ import { StageOrder } from '../../model/Stages';
 import FlatButton from 'material-ui/FlatButton';
 import { Column } from '../../model/Columns';
 import Badge from 'material-ui/Badge';
-import { badgeStyle, hiddenBadgeStyle } from './Styles_AppContainer';
+import { badgeStyle, hiddenBadgeStyle, groupNameStyle } from './Styles_AppContainer';
 import Snackbar from 'material-ui/Snackbar';
 
 @autobind
@@ -40,18 +40,26 @@ export class AppContainer extends React.Component<any, any> {
 
                 <div style={navContainerStyle}>
                 {
-                    this.listDataStore.currentUser.group.permittedViews.map((view, index) => (
-                        <FlatButton backgroundColor={view === this.listDataStore.currentView ? '#D8D8D8' : '#F2F2F2'} onClick={() => this.onSelectView(view.stageName)} key={index} style={navigateButtonStyle} >{view.stageName}
-                        {
-                            <Badge style={this.listDataStore.getPendingItemCountForView(view.stageName) ? badgeStyle : hiddenBadgeStyle} 
-                                badgeContent={this.listDataStore.getPendingItemCountForView(view.stageName)} primary={true} />
-                        }
-                        </FlatButton>
+                    this.listDataStore.currentUser.groups.map((group, key) => (
+                        <div key={key}>
+                            <h4 style={groupNameStyle}>{`${group.name} views`}</h4>
+                            {
+                                group.permittedViews.map((view, index) => (
+                                    <FlatButton backgroundColor={view === this.listDataStore.currentView ? '#D8D8D8' : '#F2F2F2'} onClick={() => this.onSelectView(view.stageName)} key={index} style={navigateButtonStyle} >{view.stageName}
+                                    {
+                                        <Badge style={this.listDataStore.getPendingItemCountForView(view.stageName) ? badgeStyle : hiddenBadgeStyle} 
+                                            badgeContent={this.listDataStore.getPendingItemCountForView(view.stageName)} primary={true} />
+                                    }
+                                    </FlatButton>
+                                ))
+                            }
+                        </div>
                     ))
                 }
+
                 </div>
 
-                <h3 style={tableTitleStyle} >Current View: {this.listDataStore.currentView.stageName}</h3>
+                <h2 style={tableTitleStyle} >Current View: {this.listDataStore.currentView.stageName}</h2>
                 <ListDataTable />
                 <EditItemForm />
                 { /* Only display the new item button on the first stage */ 

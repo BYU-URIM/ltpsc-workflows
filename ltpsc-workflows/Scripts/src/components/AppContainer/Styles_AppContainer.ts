@@ -33,7 +33,7 @@ export const allTableStyle = {
 }
 
 export const navigateButtonStyle = {
-    margin: '10 10 0 0',
+    margin: '0 10 0 0',
     height: 45,
     padding: '0 20 0 50',
     fontWeight: 500
@@ -64,4 +64,8 @@ export const badgeStyle = {
 export const hiddenBadgeStyle = {
     padding: '16px 12px 10px 18px',
     visibility: 'hidden'
+}
+
+export const groupNameStyle = {
+    marginBottom: 0
 }

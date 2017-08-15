@@ -7,6 +7,7 @@ import IGroup from '../model/Groups';
 import * as transformers from '../utils/transformers'
 import * as Columns from '../model/Columns'
 import { ILookupOptionDictionary } from '../model/Columns';
+import * as PdfService from './PdfService'
 
 
 export async function fetchCurrentUser(): Promise<IUser> {
@@ -14,13 +15,13 @@ export async function fetchCurrentUser(): Promise<IUser> {
     const rawGroupInfo = await dao.genericGetByEndpoint(rawUserInfo.d.Groups.__deferred.uri)
 
     // resolve the raw group info into a group objects
-    let userGroup = getUserGroupFromRawGroupInfo(rawGroupInfo)
+    let userGroups = getUserGroupFromRawGroupInfo(rawGroupInfo)
 
     const user: IUser = {
         name: rawUserInfo.d.Title,
         email: rawUserInfo.d.Email,
         netId: rawUserInfo.d.LoginName,
-        group: userGroup
+        groups: userGroups
     }
 
     return Promise.resolve(user)
@@ -45,7 +46,6 @@ export async function fetchLookupValues(): Promise<Map<string, ILookupOptionDict
     const colAreaOptionDictionary: ILookupOptionDictionary = {}
     colAreaData.d.results.forEach((rawColAreaObject) => colAreaOptionDictionary[rawColAreaObject.Id] = rawColAreaObject.Title)
     storeMap.set('Collecting_x0020_AreaId', colAreaOptionDictionary)
-    debugger
 
     return Promise.resolve(storeMap)
     //return Promise.resolve(new Map().set('Collecting_x0020_AreaId', {5: 'option1', 6: 'option2'}))
@@ -64,11 +64,32 @@ export async function updateListItem(listItem: ListItem) {
     return listItem
 }
 
+export async function createListItemPdf(listItem: ListItem) {
+    const rawSecurityInfo = await dao.fetchSecurityValidation()
+    const pdfBuffer: ArrayBuffer = await PdfService.generateListItemPdfBuffer(listItem)
+    const createInfo = await dao.savePdfToServer(pdfBuffer, `${listItem.Title}.pdf`, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
+    return createInfo.d
+}
+
 
 // private helper functions
-function getUserGroupFromRawGroupInfo(rawGroupInfo): IGroup {
-    for(let groupKey in groups) {
-        if(rawGroupInfo.d.results.length && (groups[groupKey].name === rawGroupInfo.d.results[0].Title)) 
-            return groups[groupKey]
+function getUserGroupFromRawGroupInfo(rawGroupInfo): IGroup[] {
+    const userGroups: Array<IGroup> = []
+    const adminGroup = rawGroupInfo.d.results.find((element) => element.Title === 'LTPSC Administrators')
+
+    // if the user is an admin
+    if(adminGroup) {
+        // add all groups to the userGroups 
+        Object.keys(groups).forEach(groupKey => userGroups.push(groups[groupKey]))
+    } else {
+        // otherwise, iterate through user's fetched group array and add corresponding groups to the user group array
+        rawGroupInfo.d.results.forEach(element => {
+            const inCodeGroupName = element.Title.replace(' ', '')
+            if(groups[inCodeGroupName]) {
+                userGroups.push(groups[inCodeGroupName])
+            }
+        });
     }
+
+    return userGroups
 }

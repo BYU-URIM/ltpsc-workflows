@@ -9,7 +9,7 @@ export const TestUser: IUser = {
     name: 'Connor Moody',
     email: 'cdmoody0604@gmail.com',
     netId: 'cmoody4',
-    group: Groups.Curator
+    groups: [Groups.Curator]
 }
 
 

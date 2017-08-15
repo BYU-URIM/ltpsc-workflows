@@ -3,6 +3,7 @@ import * as $ from 'jquery'
 import { ListItem } from '../model/ListItem';
 
 const hostWebUrl = 'https://ltpsc-workflows.byu.edu'
+const archiveLibraryUrl = 'Archive'
 
 export function fetchCurrentUserFromServer(): JQueryXHR {
     return ajax({
@@ -24,7 +25,7 @@ export function genericGetByEndpoint(endpoint: string): JQueryXHR {
 
 export function fetchListItemsFromServer(): JQueryXHR {
     return ajax({
-        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?$filter=(Stage ne 'Complete') and (Stage ne 'Suspended')&@target='${hostWebUrl}'`,
+        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?$filter=Stage ne 'Complete'&@target='${hostWebUrl}'`,
         method: 'GET',
         headers: { 'Accept': 'application/json; odata=verbose' },
     })
@@ -77,4 +78,18 @@ export function fetchSecurityValidation(): JQueryXHR {
         contentType: "application/json; odata=verbose",
         headers: { "Accept": "application/json; odata=verbose" }
     });
+}
+
+export function savePdfToServer(pdfBuffer: ArrayBuffer, filename: string, requestDigest: string): JQueryXHR {
+    return ajax({
+        url: `../_api/SP.AppContextSite(@target)/web/getfolderbyserverrelativeurl('${archiveLibraryUrl}')/files/add(overwrite=true,url='${filename}')?@target='${hostWebUrl}'`,
+        method: 'POST',
+        processData: false,
+        headers: {
+            'accept': 'application/json;odata=verbose',
+            'X-RequestDigest': jQuery('#__REQUESTDIGEST').val(),
+             'contentType': 'application/json; odata=verbose'
+         },
+         data: pdfBuffer
+    })
 }

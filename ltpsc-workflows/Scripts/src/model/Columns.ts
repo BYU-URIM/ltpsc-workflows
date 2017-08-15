@@ -1,3 +1,4 @@
+import ListDataStore from '../stores/ListDataStore';
 export class Column {
     displayName: string
     spName: string
@@ -36,6 +37,9 @@ export interface ILookupOptionDictionary {
     [OptionId: number]: string
 }
 
+
+// column classes used to build views - they are instanced in the Views.ts files for each view in which they are present
+// since all of the 'Moved to <StageName>' columns will never be part of a view, there are no column classes representing them
 export class AccessionNumber extends Column {
     displayName = 'Accession Number'
     spName = 'Accession_x0020_Number'
@@ -336,8 +340,9 @@ export class SubmittingCurator extends Column {
     type = 'text' as FieldType
 }
 
+// TODO change class name and spName to match the new dispay name: SupervisorApproval => ReviewerApproval
 export class SupervisorApproval extends Column {
-    displayName = 'Supervisor Approval'
+    displayName = 'Reviewer Approval'
     spName = 'Supervisor_x0020_Approval'
     type = 'checkbox' as FieldType
 }
@@ -430,4 +435,10 @@ export class CollectionLocationAssignmentDate extends Column {
     displayName = 'Collection Location Assignment Date'
     spName = 'Collection_x0020_Assignment_x002'
     type = 'datetime' as FieldType
+}
+
+export class LastStageBeforeSuspension extends Column {
+    displayName = 'Last Stage Before Suspension'
+    spName = 'LastStageBeforeSuspension'
+    type = 'text' as FieldType
 }

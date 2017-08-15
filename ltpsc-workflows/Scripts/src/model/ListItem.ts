@@ -69,6 +69,25 @@ export class ListItem {
     @observable Labeling_x0020_Done: boolean
     @observable Collection_x0020_Assignment_x002: string
     @observable Stage: string = StageOrder[0]
+    @observable Moved_x0020_to_x0020_Assign_x002: string
+    @observable Moved_x0020_to_x0020_Authority_x: string
+    @observable Moved_x0020_to_x0020_Catalog_x00: string
+    @observable Moved_x0020_to_x0020_Collections: string
+    @observable Moved_x0020_to_x0020_Complete: string
+    @observable Moved_x0020_to_x0020_Content_x00: string
+    @observable Moved_x0020_to_x0020_Deliver_x00: string
+    @observable Moved_x0020_to_x0020_Description: string
+    @observable Moved_x0020_to_x0020_Enter_x0020: string
+    @observable Moved_x0020_to_x0020_Enter_x00200: string
+    @observable Moved_x0020_to_x0020_Final_x0020: string
+    @observable Moved_x0020_to_x0020_Labeling_x0: string
+    @observable Moved_x0020_to_x0020_Pickup_x002: string
+    @observable Moved_x0020_to_x0020_Processing_: string
+    @observable Moved_x0020_to_x0020_Retrieve_x0: string
+    @observable Moved_x0020_to_x0020_Review_x002: string
+    @observable Moved_x0020_to_x0020_Suspended: string
+    @observable Moved_x0020_to_x0020_Uploading_x: string
+    @observable LastStageBeforeSuspension: string
 }
 
 export const DEFAULT_LIST_ITEM = new ListItem()

@@ -7,9 +7,9 @@ import { IUser } from '../model/Users'
 import * as PersistorService from '../services/PersistorService'
 import { DEFAULT_USER } from '../model/Users'
 import { DEAFULT_VIEW } from '../model/Views'
-import { DATE_REGEX } from '../utils/general';
+import { DATE_REGEX, getMovedToColumnNameFromStageName, getFormattedDate } from '../utils/general';
 import { ListItem, DEFAULT_LIST_ITEM } from '../model/ListItem';
-import { StageName, StageOrder } from '../model/Stages';
+import { StageName, StageOrder, IPendingStageData } from '../model/Stages';
 import { EditFormStatusEnum } from '../model/EditFormStatusEnum';
 import { ILookupOptionDictionary } from '../model/Columns';
 
@@ -32,8 +32,15 @@ export default class ListDataStore {
         return this.currentView.columns.map((column) => column.spName)
     }
 
-    @computed get currentUserPermittedViews(): Array<IView> {
-        return this.currentUser ? this.currentUser.group.permittedViews : []
+    @computed get currentUserAllPermittedViews(): Array<IView> {
+        if(this.currentUser) {
+            return this.currentUser.groups.reduce((accumulator, group) => {
+                accumulator.push(...group.permittedViews)
+                return accumulator
+            }, [])
+        } else {
+            return []
+        }
     }
 
     @action
@@ -41,7 +48,7 @@ export default class ListDataStore {
         // user and group data
         const currentUser = await PersistorService.fetchCurrentUser()
         runInAction(() => this.currentUser = currentUser)
-        runInAction(() => this.currentView = this.currentUser.group.permittedViews[0] || DEAFULT_VIEW)
+        runInAction(() => this.currentView = this.currentUser.groups[0].permittedViews[0] || DEAFULT_VIEW)
 
         // lookup column metadata
         const lookupValuesMap = await PersistorService.fetchLookupValues()
@@ -53,7 +60,7 @@ export default class ListDataStore {
     }
 
     @action setCurrentView(viewName: string) {
-        this.currentView = this.currentUser.group.permittedViews.find((view) => {
+        this.currentView = this.currentUserAllPermittedViews.find((view) => {
             return view.stageName === viewName
         })
     }
@@ -96,10 +103,15 @@ export default class ListDataStore {
             return
         }
 
-        const saveInfo = await this.saveEditItemForm(this.currentEditItemNextStage)
+        // list item save process
+        const pendingStageData: IPendingStageData = {
+            Stage: this.currentEditItemNextStage, 
+            [getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: getFormattedDate()
+        }
+        const saveInfo = await this.saveEditItemForm()
+
         if(saveInfo) {
-            runInAction(() => this.currentEditItem.Stage = this.currentEditItemNextStage)
-            this.onSuccessfullSave(saveInfo)
+            this.onSuccessfullSave(saveInfo, pendingStageData)
         }
     }
 
@@ -109,10 +121,13 @@ export default class ListDataStore {
             return
         }
 
-        const saveInfo = await this.saveEditItemForm(this.currentEditItemPreviousstage)
+        const pendingStageData: IPendingStageData = {
+            Stage: this.currentEditItemPreviousstage, 
+            [getMovedToColumnNameFromStageName(this.currentEditItemPreviousstage)]: getFormattedDate()
+        }
+        const saveInfo = await this.saveEditItemForm(pendingStageData)
         if(saveInfo) {
-            runInAction(() => this.currentEditItem.Stage = this.currentEditItemPreviousstage)
-            this.onSuccessfullSave(saveInfo)
+            this.onSuccessfullSave(saveInfo, pendingStageData)
         }
     }
 
@@ -123,13 +138,17 @@ export default class ListDataStore {
         }
 
         this.closeSuspensionDialogue()
-        const saveInfo = await this.saveEditItemForm('Suspended')
+
+        const pendingStageData: IPendingStageData = { 
+            Stage: 'Suspended', 
+            [getMovedToColumnNameFromStageName('Suspended')]: getFormattedDate(),
+            LastStageBeforeSuspension: this.currentEditItem.Stage
+        }
+        const saveInfo = await this.saveEditItemForm(pendingStageData)
         if(saveInfo) {
-            runInAction(() => this.currentEditItem.Stage = 'Suspended') // write stage to cached listItem once valid save call occurs
-            this.onSuccessfullSave(saveInfo)
+            this.onSuccessfullSave(saveInfo, pendingStageData)
         }
     }
-
 
     @action updateCurrentEditItem(key: string, value: any) {
         this.currentEditItem[key] = value
@@ -208,13 +227,21 @@ export default class ListDataStore {
     }
 
     @computed get currentEditItemNextStage(): StageName {
-        const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage as StageName)
-        return stageIndex !== StageOrder.length - 1 ? StageOrder[stageIndex + 1] : null
+        if(this.currentView.stageName !== 'Suspended') {
+            const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage as StageName)
+            return stageIndex !== StageOrder.length - 1 ? StageOrder[stageIndex + 1] : null
+        } else {
+            return null
+        }
     }
 
     @computed get currentEditItemPreviousstage(): StageName {
-        const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage as StageName)
-        return stageIndex !== 0 ? StageOrder[stageIndex - 1] : null
+        if(this.currentView.stageName !== 'Suspended') {
+            const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage as StageName)
+            return stageIndex !== 0 ? StageOrder[stageIndex - 1] : null
+        } else {
+            return this.currentEditItem.LastStageBeforeSuspension as StageName || StageOrder[0]
+        }
     }
 
     @computed get currentViewListItems() {
@@ -235,25 +262,36 @@ export default class ListDataStore {
         return this.listitems.filter((listItem) => listItem.Stage === stageName).length
     }
 
-
+    @computed get canSuspendCurrentEditItem() {
+        return this.isCurrentUserAdmin && this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING && this.currentView.stageName !== 'Suspended'
+    }
 
     // private helpers
     @computed private get selectedItemID() {
         return this.currentViewListItems[this.selectedItemIndex].Id
     }
 
+    @computed private get isCurrentUserAdmin(): boolean {
+        return !!this.currentUser.groups.find(group => group.name === 'Admin Only')
+    }
+
 
     // this function is in charge of attempting to save a form to the server and handling async errors
     // @PARAM optional pendingStage, meaning if there is a pending stage change, it can be attempted to save on the server without the caller having
     // to update the cached listItem in memory prematurely - the caller can wait untill a successfull save has been detected
-    @action private async saveEditItemForm(pendingStage?: StageName): Promise<any> {
+    @action private async saveEditItemForm(pendingStageData?: IPendingStageData): Promise<any> {
         // await calls to server
         try {
             this.asyncPendingLockout = true
-            const saveItem: ListItem = pendingStage ? Object.assign({}, this.currentEditItem, {Stage: pendingStage}) : Object.assign({}, this.currentEditItem)
+            const saveItem: ListItem = pendingStageData // if there is a pending stage, create a new object with the pending data (stage and MovedTo date) before the attempted save
+                ? Object.assign({}, this.currentEditItem, pendingStageData) 
+                : Object.assign({}, this.currentEditItem) // otherwise, save a clone of the current item
 
             const persistorFunction = this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW ? PersistorService.createListItem : PersistorService.updateListItem
             const saveInfo = await persistorFunction(saveItem)
+            // if the item to be saved is at the last stage, create a pdf on the server after saving the list item
+            if(pendingStageData.Stage === StageOrder[StageOrder.length - 1]) await PersistorService.createListItemPdf(saveItem)
+
             return saveInfo
 
         } catch(error) {
@@ -266,8 +304,13 @@ export default class ListDataStore {
     }
 
     // private helper functions managing clean after successfull save
-    @action private onSuccessfullSave(saveInfo: any) {
+    @action private onSuccessfullSave(saveInfo: any, newStageData?: IPendingStageData) {
+        // update the current edit item with the most recent data successfully saved to the server
         this.currentEditItem.Id = saveInfo.Id
+        if(newStageData) 
+            for(let key in newStageData) { this.currentEditItem[key] = newStageData[key] }
+
+        // add the current edit item back into its place in the store
         if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW) {
             this.listitems.push(this.currentEditItem)
         } else if(this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING) {
@@ -275,8 +318,8 @@ export default class ListDataStore {
             this.listitems[staleItemIndex] = this.currentEditItem
          }
 
+         // close down the modal
         this.currentEditItem = DEFAULT_LIST_ITEM
         this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
     }
-
 }

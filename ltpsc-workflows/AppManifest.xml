@@ -3,7 +3,7 @@
 <App xmlns="http://schemas.microsoft.com/sharepoint/2012/app/manifest"
      Name="ltpsc-workflows"
      ProductID="{5eedfef8-fd83-4f99-985e-1678c20e23e9}"
-     Version="1.0.0.1"
+     Version="1.0.0.4"
      SharePointMinVersion="15.0.0.0"
 >
   <Properties>

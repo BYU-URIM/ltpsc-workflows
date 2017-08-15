@@ -30,7 +30,8 @@ export class EditItemForm extends React.Component<any, any> {
         const validationState = this.listDataStore.currentEditItemValidationState
 
         return (
-            <Dialog autoScrollBodyContent={true} title={`${this.listDataStore.currentView.stageName}: New Item`} actions={actions} modal={true} open={this.listDataStore.isDisplayEditItemForm} >
+            <Dialog title={`${this.listDataStore.currentView.stageName}: ${this.listDataStore.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW ? 'New' : 'Edit'} Item`} 
+                autoScrollBodyContent={true} actions={actions} modal={true} open={this.listDataStore.isDisplayEditItemForm} >
                 <div style={inputFieldStyles}>
                 {
                     this.listDataStore.currentEditItemPreviousstage &&
@@ -89,7 +90,7 @@ export class EditItemForm extends React.Component<any, any> {
                         onClick={this.listDataStore.submitEditItemToNextStage} disabled={this.listDataStore.asyncPendingLockout} /> )
                 }
                 {
-                    this.listDataStore.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING &&
+                    this.listDataStore.canSuspendCurrentEditItem &&
                     <RaisedButton label={'suspend item'} backgroundColor='#EEB3B3' onClick={this.listDataStore.openSuspensionDialogue} disabled={this.listDataStore.asyncPendingLockout} />
                 }
                 </div>
