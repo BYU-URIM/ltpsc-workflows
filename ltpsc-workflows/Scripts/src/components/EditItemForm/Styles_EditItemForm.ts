@@ -23,3 +23,16 @@ export const suspensionDialogueStyle = {
     width: '35%',
     margin: '0 auto'
 }
+
+export const submitFormButtonStyle = {
+    marginTop: 40,
+    marginRight: 20,
+    display: 'inline-block'
+}
+
+export const formModalStyle = {
+    width: '60%',
+    maxWidth: '100%',
+    maxHeight: '100% !important',
+    height: '100% !important'
+}

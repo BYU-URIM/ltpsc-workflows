@@ -3,5 +3,7 @@
   <Module Name="Scripts">
     <File Path="Scripts\dist\bundle.js" Url="Scripts/dist/bundle.js" ReplaceContent="TRUE" />
     <File Path="Scripts\dist\bundle.js.map" Url="Scripts/dist/bundle.js.map" ReplaceContent="TRUE" />
+    <File Path="Scripts\extlib\pdfmake.min.js" Url="Scripts/extlib/pdfmake.min.js" ReplaceContent="TRUE" />
+    <File Path="Scripts\extlib\vfs_fonts.js" Url="Scripts/extlib/vfs_fonts.js" ReplaceContent="TRUE" />
   </Module>
 </Elements>

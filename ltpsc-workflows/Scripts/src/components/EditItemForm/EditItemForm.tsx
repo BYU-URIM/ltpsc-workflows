@@ -9,7 +9,15 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import Checkbox from 'material-ui/Checkbox';
-import { inputFieldStyles, checkboxStyle, formButtonStyle, suspensionFormButtonStyle, suspensionDialogueStyle } from './Styles_EditItemForm';
+import { 
+    inputFieldStyles, 
+    checkboxStyle, 
+    formButtonStyle, 
+    suspensionFormButtonStyle, 
+    suspensionDialogueStyle, 
+    submitFormButtonStyle,
+    formModalStyle
+ } from './Styles_EditItemForm';
 import RaisedButton from 'material-ui/RaisedButton';
 import { EditFormStatusEnum } from '../../model/EditFormStatusEnum';
 
@@ -31,9 +39,9 @@ export class EditItemForm extends React.Component<any, any> {
 
         return (
             <Dialog title={`${this.listDataStore.currentView.stageName}: ${this.listDataStore.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW ? 'New' : 'Edit'} Item`} 
-                autoScrollBodyContent={true} actions={actions} modal={true} open={this.listDataStore.isDisplayEditItemForm} >
+                autoScrollBodyContent={true} actions={actions} modal={true} open={this.listDataStore.isDisplayEditItemForm} contentStyle={formModalStyle} >
                 <div style={inputFieldStyles}>
-                {
+                {   /* return to previous stage button */
                     this.listDataStore.currentEditItemPreviousstage &&
                     (<RaisedButton style={formButtonStyle} label={`return to previous stage - ${this.listDataStore.currentEditItemPreviousstage}`} 
                         onClick={this.listDataStore.returnEditItemToPreviousStage} disabled={this.listDataStore.asyncPendingLockout} /> )
@@ -84,14 +92,19 @@ export class EditItemForm extends React.Component<any, any> {
                         }
                     })
                 }
-                {
+                {   /* submit to next stage button */
                     this.listDataStore.currentEditItemNextStage &&
-                    (<RaisedButton style={formButtonStyle} label={`submit to next stage - ${this.listDataStore.currentEditItemNextStage}`} 
-                        onClick={this.listDataStore.submitEditItemToNextStage} disabled={this.listDataStore.asyncPendingLockout} /> )
+                    (<div style={submitFormButtonStyle}><RaisedButton label={`submit to next stage - ${this.listDataStore.currentEditItemNextStage}`} 
+                        onClick={this.listDataStore.submitEditItemToNextStage} disabled={this.listDataStore.asyncPendingLockout} /></div> )
+                }
+                {   /* suspend item button */
+                    this.listDataStore.canSuspendCurrentEditItem &&
+                    <div style={formButtonStyle}><RaisedButton label={'suspend item'} backgroundColor='#EEB3B3' onClick={this.listDataStore.openSuspensionDialogue} disabled={this.listDataStore.asyncPendingLockout} /></div>
                 }
                 {
-                    this.listDataStore.canSuspendCurrentEditItem &&
-                    <RaisedButton label={'suspend item'} backgroundColor='#EEB3B3' onClick={this.listDataStore.openSuspensionDialogue} disabled={this.listDataStore.asyncPendingLockout} />
+                    /* submit to shipping next stage button */
+                    this.listDataStore.canCreateShippingLabel &&
+                    <div style={formButtonStyle}><RaisedButton label={'generate pickup ticket'} onClick={this.listDataStore.createPickupTicket} /></div>
                 }
                 </div>
 

@@ -1,4 +1,5 @@
 import { StageName } from '../model/Stages';
+
 export function getFormattedDate() {
     const date = new Date()
     return `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`
@@ -17,7 +18,7 @@ export function getMovedToColumnNameFromStageName(stageName: StageName) {
         case 'Catalog Collection':
             return 'Moved_x0020_to_x0020_Catalog_x00'
 
-        case 'Collections Management Collections Review':
+        case 'Collections Management Collection Review':
             return 'Moved_x0020_to_x0020_Collections'
 
         case 'Complete':

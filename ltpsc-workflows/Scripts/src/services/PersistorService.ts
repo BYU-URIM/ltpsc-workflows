@@ -14,7 +14,7 @@ export async function fetchCurrentUser(): Promise<IUser> {
     const rawUserInfo = await dao.fetchCurrentUserFromServer()
     const rawGroupInfo = await dao.genericGetByEndpoint(rawUserInfo.d.Groups.__deferred.uri)
 
-    // resolve the raw group info into a group objects
+    // resolve the raw group info into group objects
     let userGroups = getUserGroupFromRawGroupInfo(rawGroupInfo)
 
     const user: IUser = {
@@ -67,15 +67,15 @@ export async function updateListItem(listItem: ListItem) {
 export async function createListItemPdf(listItem: ListItem) {
     const rawSecurityInfo = await dao.fetchSecurityValidation()
     const pdfBuffer: ArrayBuffer = await PdfService.generateListItemPdfBuffer(listItem)
-    const createInfo = await dao.savePdfToServer(pdfBuffer, `${listItem.Title}.pdf`, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
+    const createInfo = await dao.savePdfToServer(pdfBuffer, `${listItem.Call_x0020_Number}.pdf`, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
     return createInfo.d
 }
 
 
-// private helper functions
+// private helper function to resolve the raw group data received from the server into a group array for the current user object
 function getUserGroupFromRawGroupInfo(rawGroupInfo): IGroup[] {
     const userGroups: Array<IGroup> = []
-    const adminGroup = rawGroupInfo.d.results.find((element) => element.Title === 'LTPSC Administrators')
+    const adminGroup = rawGroupInfo.d.results.find(element => element.Title === 'LTPSC Administrators')
 
     // if the user is an admin
     if(adminGroup) {

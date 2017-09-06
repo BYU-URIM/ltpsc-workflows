@@ -12,7 +12,12 @@ module.exports = {
     publicPath: '/assets/'
   },
   resolve: {
-    extensions: ['', '.js', '.ts', '.tsx']
+    extensions: ['', '.js', '.ts', '.tsx'],
+    plugins: [
+        new webpack.ResolverPlugin(
+            new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin(".bower.json", ["main"])
+        )
+    ]
   },
   module: {
     loaders: [{

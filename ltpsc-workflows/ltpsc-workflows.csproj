@@ -50,6 +50,8 @@
     <Content Include="Scripts\Elements.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Scripts\extlib\pdfmake.min.js" />
+    <Content Include="Scripts\extlib\vfs_fonts.js" />
     <None Include="packages.config" />
     <None Include="Pages\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{5eedfef8-fd83-4f99-985e-1678c20e23e9}</SharePointProjectItemId>
@@ -100,6 +102,7 @@
       <SubType>Designer</SubType>
     </AppManifestFile>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
