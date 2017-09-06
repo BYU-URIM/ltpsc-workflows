@@ -12,6 +12,7 @@ import { ListItem, DEFAULT_LIST_ITEM } from '../model/ListItem';
 import { StageName, StageOrder, IPendingStageData } from '../model/Stages';
 import { EditFormStatusEnum } from '../model/EditFormStatusEnum';
 import { ILookupOptionDictionary } from '../model/Columns';
+import * as PdfService from '../services/PdfService'
 
 
 @autobind
@@ -108,10 +109,30 @@ export default class ListDataStore {
             Stage: this.currentEditItemNextStage, 
             [getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: getFormattedDate()
         }
-        const saveInfo = await this.saveEditItemForm()
+        // await the list item save and store the JSON returned from the server if successfull or null if there was an error
+        const listItemSaveInfo = await this.saveEditItemForm(pendingStageData)
 
-        if(saveInfo) {
-            this.onSuccessfullSave(saveInfo, pendingStageData)
+
+        // pdf save process
+        let pdfSaveError = false
+        // if the save was successfull and the next stage is complete, attempt to archive the PDF of the item
+        if(listItemSaveInfo && pendingStageData.Stage === StageOrder[StageOrder.length - 1]) {
+            runInAction(() => this.asyncPendingLockout = false) // relock the UI since another asnyc operation is required
+            try {
+                await PersistorService.createListItemPdf(this.currentEditItem)
+            } catch(error) {
+                pdfSaveError = true
+                this.onAsyncError(error)
+                // if the PDF save fails, roll back the listItem save by saving the current edit item form WITHOUT a new pending stage
+                // this undoes the prevous save with a new stage, since the item will need to stay in its current stage after a failed pdf save
+                await this.saveEditItemForm()
+            } finally {
+                runInAction(() => this.asyncPendingLockout = false)
+            }
+        }
+
+        if(listItemSaveInfo && !pdfSaveError) {
+            this.onSuccessfullSave(listItemSaveInfo, pendingStageData)
         }
     }
 
@@ -183,6 +204,12 @@ export default class ListDataStore {
 
     @action closeSuspensionDialogue(): void {
         this.isDisplaySuspensionDialogue = false
+    }
+
+    @action createPickupTicket() {
+        this.asyncPendingLockout = true
+        PdfService.generatePickupTicketPdf(this.currentEditItem)
+        this.asyncPendingLockout = false
     }
 
     @computed get currentEditItemValidationState() {
@@ -266,6 +293,10 @@ export default class ListDataStore {
         return this.isCurrentUserAdmin && this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING && this.currentView.stageName !== 'Suspended'
     }
 
+    @computed get canCreateShippingLabel() {
+        return this.currentEditItem.Stage === 'Pickup from Processor'
+    }
+
     // private helpers
     @computed private get selectedItemID() {
         return this.currentViewListItems[this.selectedItemIndex].Id
@@ -289,8 +320,6 @@ export default class ListDataStore {
 
             const persistorFunction = this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_NEW ? PersistorService.createListItem : PersistorService.updateListItem
             const saveInfo = await persistorFunction(saveItem)
-            // if the item to be saved is at the last stage, create a pdf on the server after saving the list item
-            if(pendingStageData.Stage === StageOrder[StageOrder.length - 1]) await PersistorService.createListItemPdf(saveItem)
 
             return saveInfo
 

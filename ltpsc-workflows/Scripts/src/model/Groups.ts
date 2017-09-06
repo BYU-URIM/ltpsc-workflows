@@ -26,17 +26,22 @@ export const CollectionsManagement: IGroup = {
 
 export const Processor: IGroup = {
     name: 'Processor',
-    permittedViews: [ Views.EnterDescription ]
+    permittedViews: [ Views.RequestMaterials, Views.EnterDescription ]
 }
 
 export const DescriptionSpecialist: IGroup = {
     name: 'Description Specialist',
-    permittedViews: [ Views.DescriptionSpecialistTiCollectionReview ]
+    permittedViews: [ Views.DescriptionSpecialistCollectionReview ]
 }
 
 export const Cataloging: IGroup = {
     name: 'Cataloging',
-    permittedViews: [ Views.AuthorityWorkReview, Views.CatalogCollection, Views.UploadingFindingAid ]
+    permittedViews: [ Views.CatalogCollection, Views.UploadingFindingAid ]
+}
+
+export const AuthorityAndSubjectSpecialist: IGroup = {
+    name: 'Authority and Subject Specialist',
+    permittedViews: [ Views.AuthorityWorkReview ]
 }
 
 export const AdminOnly: IGroup = {

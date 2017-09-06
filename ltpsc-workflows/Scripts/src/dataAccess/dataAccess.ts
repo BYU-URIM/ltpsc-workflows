@@ -87,7 +87,7 @@ export function savePdfToServer(pdfBuffer: ArrayBuffer, filename: string, reques
         processData: false,
         headers: {
             'accept': 'application/json;odata=verbose',
-            'X-RequestDigest': jQuery('#__REQUESTDIGEST').val(),
+            'X-RequestDigest': requestDigest,
              'contentType': 'application/json; odata=verbose'
          },
          data: pdfBuffer

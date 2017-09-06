@@ -46,6 +46,12 @@ export class AccessionNumber extends Column {
     type = 'text' as FieldType
 }
 
+export class AppraisalNote extends Column {
+    displayName = 'Appraisal Note'
+    spName = 'Appraisal_x0020_Note'
+    type = 'textarea' as FieldType
+}
+
 export class ApproveProcessingPlan extends Column {
     displayName = 'Approve Processing Plan'
     spName = 'Approve_x0020_Processing_x0020_P'
@@ -58,7 +64,7 @@ export class ApproveRequest extends Column {
     type = 'checkbox' as FieldType
 }
 
-export class ArrangementAndDescriptionCmments extends Column {
+export class ArrangementAndDescriptionComments extends Column {
     displayName = 'Arrangement and Description Comments'
     spName = 'Arrangement_x0020_and_x0020_Desc'
     type = 'textarea' as FieldType
@@ -265,6 +271,12 @@ export class LocationOfMaterials extends Column {
     type = 'textarea' as FieldType
 }
 
+export class LocationOfDelivery extends Column {
+    displayName = 'Location of Delivery'
+    spName = 'Location_x0020_of_x0020_Delivery'
+    type = 'text' as FieldType
+}
+
 export class MonetaryValueOfMaterials extends Column {
     displayName = 'Monetary Value of Materials'
     spName = 'Monetary_x0020_Vale_x0020_of_x00'
@@ -441,4 +453,106 @@ export class LastStageBeforeSuspension extends Column {
     displayName = 'Last Stage Before Suspension'
     spName = 'LastStageBeforeSuspension'
     type = 'text' as FieldType
+}
+
+export class StageComments_AssignProcessor extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0023'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_AuthorityWorkReview extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x00211'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_CatalogCollection extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x00212'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_CollectionsManagementCollectionReview extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0028'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_ContentReview extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0027'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_DeliverCollection extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage Comments - Deliver Collection'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_DescriptionSpecialistCollectionReview extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x00210'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_EnterAcquisitionInformation extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x002'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_EnterDescription extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0026'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_FinalCuratorReview extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x00214'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_LabelingBarcodeAndLocationsAssigned extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x00215'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_PickupFromProcessor extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0029'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_ProcessingPlan extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0020'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_RequestMaterials extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0024'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_RetrieveCollectionFromCurator extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0022'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_ReviewProcessingPlan extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x0021'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_UploadingFindingAid extends Column {
+    displayName = 'Stage Comments'
+    spName = 'Stage_x0020_Comments_x0020__x00213'
+    type = 'textarea' as FieldType
 }

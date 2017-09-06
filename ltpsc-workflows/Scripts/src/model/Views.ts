@@ -38,7 +38,8 @@ export const ProcessingPlan: IView = {
         new Cols.ProposedSeriesArrangement().makeRequired(), 
         new Cols.Deaccession().setDefaultValue(false),
         new Cols.DescriptionOfProposedDeaccession(),
-        new Cols.Restrictions()
+        new Cols.Restrictions(),
+        new Cols.AppraisalNote()
     ]
 }
 
@@ -90,6 +91,15 @@ export const AssignProcessor: IView = {
         new Cols.ReviewDate().makeRequired(),
         new Cols.AssignedProcessor(),
         new Cols.DeliveryLocation()
+    ]
+}
+
+export const RequestMaterials: IView = {
+    stageName: 'Request Materials',
+    columns: [
+        new Cols.Title().makeDisplayOnly(),
+        new Cols.CallNumber().makeDisplayOnly(),
+        new Cols.LocationOfDelivery().makeRequired()
     ]
 }
 
@@ -155,12 +165,12 @@ export const ContentReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionCmments()
+        new Cols.ArrangementAndDescriptionComments()
     ]
 }
 
 export const CollectionsManagementCollectionReview: IView = {
-    stageName: 'Collections Management Collections Review',
+    stageName: 'Collections Management Collection Review',
     columns: [
         new Cols.Title().makeDisplayOnly(),
         new Cols.AccessionNumber().makeDisplayOnly(),
@@ -181,7 +191,7 @@ export const CollectionsManagementCollectionReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionCmments()
+        new Cols.ArrangementAndDescriptionComments()
     ]
 }
 
@@ -199,7 +209,7 @@ export const PickupFromProcessor: IView = {
     ]
 }
 
-export const DescriptionSpecialistTiCollectionReview: IView = {
+export const DescriptionSpecialistCollectionReview: IView = {
     stageName: 'Description Specialist Collection Review',
     columns: [
         new Cols.Title().makeDisplayOnly(),
@@ -221,7 +231,7 @@ export const DescriptionSpecialistTiCollectionReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionCmments()
+        new Cols.ArrangementAndDescriptionComments()
     ]
 }
 
@@ -245,7 +255,7 @@ export const AuthorityWorkReview: IView = {
         new Cols.RestrictionsComments(),
         new Cols.SupervisorReviewDate(),
         new Cols.SupervisorApproval().makeDisplayOnly(),
-        new Cols.ArrangementAndDescriptionCmments(),
+        new Cols.ArrangementAndDescriptionComments(),
         new Cols.CollectionManagementReviewDate(),
         new Cols.CollectionManagementComments(),
         new Cols.CatalogReviewDate(),
@@ -299,7 +309,7 @@ export const FinalCuratorReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionCmments()
+        new Cols.ArrangementAndDescriptionComments()
     ]
 }
 

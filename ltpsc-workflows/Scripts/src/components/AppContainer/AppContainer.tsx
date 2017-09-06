@@ -45,7 +45,8 @@ export class AppContainer extends React.Component<any, any> {
                             <h4 style={groupNameStyle}>{`${group.name} views`}</h4>
                             {
                                 group.permittedViews.map((view, index) => (
-                                    <FlatButton backgroundColor={view === this.listDataStore.currentView ? '#D8D8D8' : '#F2F2F2'} onClick={() => this.onSelectView(view.stageName)} key={index} style={navigateButtonStyle} >{view.stageName}
+                                    <FlatButton backgroundColor={view === this.listDataStore.currentView ? '#D8D8D8' : '#F2F2F2'} onClick={() => this.onSelectView(view.stageName)} key={index} style={navigateButtonStyle}>
+                                    {view.stageName}
                                     {
                                         <Badge style={this.listDataStore.getPendingItemCountForView(view.stageName) ? badgeStyle : hiddenBadgeStyle} 
                                             badgeContent={this.listDataStore.getPendingItemCountForView(view.stageName)} primary={true} />
