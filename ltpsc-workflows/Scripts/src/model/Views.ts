@@ -19,7 +19,8 @@ export const EnterAquisitionInformation: IView = {
         new Cols.CollectionType().makeRequired(),
         new Cols.MonetaryValueOfMaterials().makeRequired(),
         new Cols.CollectingArea().makeRequired(),
-        new Cols.SubmittingCurator().makeRequired()
+        new Cols.SubmittingCurator().makeRequired(),
+        new Cols.StageComments_EnterAcquisitionInformation()
     ]
 }
 
@@ -39,7 +40,8 @@ export const ProcessingPlan: IView = {
         new Cols.Deaccession().setDefaultValue(false),
         new Cols.DescriptionOfProposedDeaccession(),
         new Cols.Restrictions(),
-        new Cols.AppraisalNote()
+        new Cols.AppraisalNote(),
+        new Cols.StageComments_ProcessingPlan()
     ]
 }
 
@@ -61,7 +63,8 @@ export const ReviewProcessingPlan: IView = {
         new Cols.Restrictions(),
         new Cols.ProcessPlanRevisionDate().makeDisplayOnly(),
         new Cols.ApproveProcessingPlan(),
-        new Cols.CommentsOnProcessingPlan()
+        new Cols.CommentsOnProcessingPlan(),
+        new Cols.StageComments_ReviewProcessingPlan()
     ]
 }
 
@@ -75,7 +78,8 @@ export const RetrieveCollectionFromCurator: IView = {
         new Cols.PickupDate().setDefaultValue(getFormattedDate()).makeRequired(),
         new Cols.VaultMaterialsIncluded(),
         new Cols.ListMaterialsToBePlacedIntoVault(),
-        new Cols.CollectionLocationAssigned()
+        new Cols.CollectionLocationAssigned(),
+        new Cols.StageComments_RetrieveCollectionFromCurator()
     ]
 }
 
@@ -90,7 +94,8 @@ export const AssignProcessor: IView = {
         new Cols.ApproveRequest(),
         new Cols.ReviewDate().makeRequired(),
         new Cols.AssignedProcessor(),
-        new Cols.DeliveryLocation()
+        new Cols.DeliveryLocation(),
+        new Cols.StageComments_AssignProcessor()
     ]
 }
 
@@ -99,7 +104,8 @@ export const RequestMaterials: IView = {
     columns: [
         new Cols.Title().makeDisplayOnly(),
         new Cols.CallNumber().makeDisplayOnly(),
-        new Cols.LocationOfDelivery().makeRequired()
+        new Cols.LocationOfDelivery().makeRequired(),
+        new Cols.StageComments_RequestMaterials()
     ]
 }
 
@@ -115,7 +121,8 @@ export const DeliverCollection: IView = {
         new Cols.ComponentRequestID().makeDisplayOnly(),
         new Cols.DeliveryStatus(),
         new Cols.DeliveryExplanation(),
-        new Cols.DateDelivered().makeRequired()
+        new Cols.DateDelivered().makeRequired(),
+        new Cols.StageComments_DeliverCollection()
     ]
 }
 
@@ -139,7 +146,8 @@ export const EnterDescription: IView = {
         new Cols.Restrictions(),
         new Cols.RestrictionsComments(),
         new Cols.VaultMaterialsIncluded(),
-        new Cols.ListMaterialsToBePlacedIntoVault()
+        new Cols.ListMaterialsToBePlacedIntoVault(),
+        new Cols.StageComments_EnterDescription()
     ]
 }
 
@@ -165,7 +173,8 @@ export const ContentReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionComments()
+        new Cols.ArrangementAndDescriptionComments(),
+        new Cols.StageComments_ContentReview()
     ]
 }
 
@@ -191,7 +200,8 @@ export const CollectionsManagementCollectionReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionComments()
+        new Cols.ArrangementAndDescriptionComments(),
+        new Cols.StageComments_CollectionsManagementCollectionReview()
     ]
 }
 
@@ -205,7 +215,8 @@ export const PickupFromProcessor: IView = {
         new Cols.PickupShelvingDate().makeRequired(),
         new Cols.VaultMaterialsIncluded(),
         new Cols.ListMaterialsToBePlacedIntoVault(),
-        new Cols.CollectionLocationAssigned()
+        new Cols.CollectionLocationAssigned(),
+        new Cols.StageComments_PickupFromProcessor()
     ]
 }
 
@@ -231,7 +242,8 @@ export const DescriptionSpecialistCollectionReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionComments()
+        new Cols.ArrangementAndDescriptionComments(),
+        new Cols.StageComments_DescriptionSpecialistCollectionReview()
     ]
 }
 
@@ -259,7 +271,8 @@ export const AuthorityWorkReview: IView = {
         new Cols.CollectionManagementReviewDate(),
         new Cols.CollectionManagementComments(),
         new Cols.CatalogReviewDate(),
-        new Cols.CatalogReviewComments()
+        new Cols.CatalogReviewComments(),
+        new Cols.StageComments_AuthorityWorkReview()
     ]
 }
 
@@ -271,7 +284,8 @@ export const CatalogCollection: IView = {
         new Cols.CallNumber().makeDisplayOnly(),
         new Cols.CollectingArea().makeDisplayOnly(),
         new Cols.CatalogingDate().setDefaultValue(getFormattedDate()).makeRequired(),
-        new Cols.CatalogingDone().makeRequired()
+        new Cols.CatalogingDone().makeRequired(),
+        new Cols.StageComments_CatalogCollection()
     ]
 }
 
@@ -282,7 +296,8 @@ export const UploadingFindingAid: IView = {
         new Cols.AccessionNumber().makeDisplayOnly(),
         new Cols.CallNumber().makeDisplayOnly(),
         new Cols.UploadDate().setDefaultValue(getFormattedDate()).makeRequired(),
-        new Cols.FindingAidUploaded().makeRequired()
+        new Cols.FindingAidUploaded().makeRequired(),
+        new Cols.StageComments_UploadingFindingAid()
     ]
 }
 
@@ -309,7 +324,8 @@ export const FinalCuratorReview: IView = {
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
-        new Cols.ArrangementAndDescriptionComments()
+        new Cols.ArrangementAndDescriptionComments(),
+        new Cols.StageComments_FinalCuratorReview()
     ]
 }
 
@@ -324,7 +340,8 @@ export const LabelingBarcodeAndLocationAssigned: IView = {
         new Cols.BarcodeDate().setDefaultValue(getFormattedDate()),
         new Cols.BarcodingComplete().makeRequired(),
         new Cols.CollectionLocationAssignmentDate().setDefaultValue(getFormattedDate()).makeRequired(),
-        new Cols.CollectionLocationAssigned().makeRequired()
+        new Cols.CollectionLocationAssigned().makeRequired(),
+        new Cols.StageComments_LabelingBarcodeAndLocationsAssigned()
     ]
 }
 
