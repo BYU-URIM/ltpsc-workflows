@@ -39781,7 +39781,8 @@
 	        new Cols.CollectionType().makeRequired(),
 	        new Cols.MonetaryValueOfMaterials().makeRequired(),
 	        new Cols.CollectingArea().makeRequired(),
-	        new Cols.SubmittingCurator().makeRequired()
+	        new Cols.SubmittingCurator().makeRequired(),
+	        new Cols.StageComments_EnterAcquisitionInformation()
 	    ]
 	};
 	exports.ProcessingPlan = {
@@ -39800,7 +39801,8 @@
 	        new Cols.Deaccession().setDefaultValue(false),
 	        new Cols.DescriptionOfProposedDeaccession(),
 	        new Cols.Restrictions(),
-	        new Cols.AppraisalNote()
+	        new Cols.AppraisalNote(),
+	        new Cols.StageComments_ProcessingPlan()
 	    ]
 	};
 	exports.ReviewProcessingPlan = {
@@ -39821,7 +39823,8 @@
 	        new Cols.Restrictions(),
 	        new Cols.ProcessPlanRevisionDate().makeDisplayOnly(),
 	        new Cols.ApproveProcessingPlan(),
-	        new Cols.CommentsOnProcessingPlan()
+	        new Cols.CommentsOnProcessingPlan(),
+	        new Cols.StageComments_ReviewProcessingPlan()
 	    ]
 	};
 	exports.RetrieveCollectionFromCurator = {
@@ -39834,7 +39837,8 @@
 	        new Cols.PickupDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
 	        new Cols.VaultMaterialsIncluded(),
 	        new Cols.ListMaterialsToBePlacedIntoVault(),
-	        new Cols.CollectionLocationAssigned()
+	        new Cols.CollectionLocationAssigned(),
+	        new Cols.StageComments_RetrieveCollectionFromCurator()
 	    ]
 	};
 	exports.AssignProcessor = {
@@ -39848,7 +39852,8 @@
 	        new Cols.ApproveRequest(),
 	        new Cols.ReviewDate().makeRequired(),
 	        new Cols.AssignedProcessor(),
-	        new Cols.DeliveryLocation()
+	        new Cols.DeliveryLocation(),
+	        new Cols.StageComments_AssignProcessor()
 	    ]
 	};
 	exports.RequestMaterials = {
@@ -39856,7 +39861,8 @@
 	    columns: [
 	        new Cols.Title().makeDisplayOnly(),
 	        new Cols.CallNumber().makeDisplayOnly(),
-	        new Cols.LocationOfDelivery().makeRequired()
+	        new Cols.LocationOfDelivery().makeRequired(),
+	        new Cols.StageComments_RequestMaterials()
 	    ]
 	};
 	exports.DeliverCollection = {
@@ -39871,7 +39877,8 @@
 	        new Cols.ComponentRequestID().makeDisplayOnly(),
 	        new Cols.DeliveryStatus(),
 	        new Cols.DeliveryExplanation(),
-	        new Cols.DateDelivered().makeRequired()
+	        new Cols.DateDelivered().makeRequired(),
+	        new Cols.StageComments_DeliverCollection()
 	    ]
 	};
 	exports.EnterDescription = {
@@ -39894,7 +39901,8 @@
 	        new Cols.Restrictions(),
 	        new Cols.RestrictionsComments(),
 	        new Cols.VaultMaterialsIncluded(),
-	        new Cols.ListMaterialsToBePlacedIntoVault()
+	        new Cols.ListMaterialsToBePlacedIntoVault(),
+	        new Cols.StageComments_EnterDescription()
 	    ]
 	};
 	exports.ContentReview = {
@@ -39919,11 +39927,12 @@
 	        new Cols.ListMaterialsToBePlacedIntoVault(),
 	        new Cols.SupervisorReviewDate().makeRequired(),
 	        new Cols.SupervisorApproval(),
-	        new Cols.ArrangementAndDescriptionCmments()
+	        new Cols.ArrangementAndDescriptionComments(),
+	        new Cols.StageComments_ContentReview()
 	    ]
 	};
 	exports.CollectionsManagementCollectionReview = {
-	    stageName: 'Collections Management Collections Review',
+	    stageName: 'Collections Management Collection Review',
 	    columns: [
 	        new Cols.Title().makeDisplayOnly(),
 	        new Cols.AccessionNumber().makeDisplayOnly(),
@@ -39944,7 +39953,8 @@
 	        new Cols.ListMaterialsToBePlacedIntoVault(),
 	        new Cols.SupervisorReviewDate().makeRequired(),
 	        new Cols.SupervisorApproval(),
-	        new Cols.ArrangementAndDescriptionCmments()
+	        new Cols.ArrangementAndDescriptionComments(),
+	        new Cols.StageComments_CollectionsManagementCollectionReview()
 	    ]
 	};
 	exports.PickupFromProcessor = {
@@ -39957,10 +39967,11 @@
 	        new Cols.PickupShelvingDate().makeRequired(),
 	        new Cols.VaultMaterialsIncluded(),
 	        new Cols.ListMaterialsToBePlacedIntoVault(),
-	        new Cols.CollectionLocationAssigned()
+	        new Cols.CollectionLocationAssigned(),
+	        new Cols.StageComments_PickupFromProcessor()
 	    ]
 	};
-	exports.DescriptionSpecialistTiCollectionReview = {
+	exports.DescriptionSpecialistCollectionReview = {
 	    stageName: 'Description Specialist Collection Review',
 	    columns: [
 	        new Cols.Title().makeDisplayOnly(),
@@ -39982,7 +39993,8 @@
 	        new Cols.ListMaterialsToBePlacedIntoVault(),
 	        new Cols.SupervisorReviewDate().makeRequired(),
 	        new Cols.SupervisorApproval(),
-	        new Cols.ArrangementAndDescriptionCmments()
+	        new Cols.ArrangementAndDescriptionComments(),
+	        new Cols.StageComments_DescriptionSpecialistCollectionReview()
 	    ]
 	};
 	exports.AuthorityWorkReview = {
@@ -40005,11 +40017,12 @@
 	        new Cols.RestrictionsComments(),
 	        new Cols.SupervisorReviewDate(),
 	        new Cols.SupervisorApproval().makeDisplayOnly(),
-	        new Cols.ArrangementAndDescriptionCmments(),
+	        new Cols.ArrangementAndDescriptionComments(),
 	        new Cols.CollectionManagementReviewDate(),
 	        new Cols.CollectionManagementComments(),
 	        new Cols.CatalogReviewDate(),
-	        new Cols.CatalogReviewComments()
+	        new Cols.CatalogReviewComments(),
+	        new Cols.StageComments_AuthorityWorkReview()
 	    ]
 	};
 	exports.CatalogCollection = {
@@ -40020,7 +40033,8 @@
 	        new Cols.CallNumber().makeDisplayOnly(),
 	        new Cols.CollectingArea().makeDisplayOnly(),
 	        new Cols.CatalogingDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
-	        new Cols.CatalogingDone().makeRequired()
+	        new Cols.CatalogingDone().makeRequired(),
+	        new Cols.StageComments_CatalogCollection()
 	    ]
 	};
 	exports.UploadingFindingAid = {
@@ -40030,7 +40044,8 @@
 	        new Cols.AccessionNumber().makeDisplayOnly(),
 	        new Cols.CallNumber().makeDisplayOnly(),
 	        new Cols.UploadDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
-	        new Cols.FindingAidUploaded().makeRequired()
+	        new Cols.FindingAidUploaded().makeRequired(),
+	        new Cols.StageComments_UploadingFindingAid()
 	    ]
 	};
 	exports.FinalCuratorReview = {
@@ -40056,7 +40071,8 @@
 	        new Cols.ListMaterialsToBePlacedIntoVault(),
 	        new Cols.SupervisorReviewDate().makeRequired(),
 	        new Cols.SupervisorApproval(),
-	        new Cols.ArrangementAndDescriptionCmments()
+	        new Cols.ArrangementAndDescriptionComments(),
+	        new Cols.StageComments_FinalCuratorReview()
 	    ]
 	};
 	exports.LabelingBarcodeAndLocationAssigned = {
@@ -40070,7 +40086,8 @@
 	        new Cols.BarcodeDate().setDefaultValue(general_1.getFormattedDate()),
 	        new Cols.BarcodingComplete().makeRequired(),
 	        new Cols.CollectionLocationAssignmentDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
-	        new Cols.CollectionLocationAssigned().makeRequired()
+	        new Cols.CollectionLocationAssigned().makeRequired(),
+	        new Cols.StageComments_LabelingBarcodeAndLocationsAssigned()
 	    ]
 	};
 	exports.Suspended = {
@@ -40144,7 +40161,7 @@
 	    }
 	}
 	exports.ApproveRequest = ApproveRequest;
-	class ArrangementAndDescriptionCmments extends Column {
+	class ArrangementAndDescriptionComments extends Column {
 	    constructor() {
 	        super(...arguments);
 	        this.displayName = 'Arrangement and Description Comments';
@@ -40152,7 +40169,7 @@
 	        this.type = 'textarea';
 	    }
 	}
-	exports.ArrangementAndDescriptionCmments = ArrangementAndDescriptionCmments;
+	exports.ArrangementAndDescriptionComments = ArrangementAndDescriptionComments;
 	class ArrangementAndDescriptionDate extends Column {
 	    constructor() {
 	        super(...arguments);
@@ -40726,6 +40743,159 @@
 	    }
 	}
 	exports.LastStageBeforeSuspension = LastStageBeforeSuspension;
+	class StageComments_AssignProcessor extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0023';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_AssignProcessor = StageComments_AssignProcessor;
+	class StageComments_AuthorityWorkReview extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x00211';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_AuthorityWorkReview = StageComments_AuthorityWorkReview;
+	class StageComments_CatalogCollection extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x00212';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_CatalogCollection = StageComments_CatalogCollection;
+	class StageComments_CollectionsManagementCollectionReview extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0028';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_CollectionsManagementCollectionReview = StageComments_CollectionsManagementCollectionReview;
+	class StageComments_ContentReview extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0027';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_ContentReview = StageComments_ContentReview;
+	class StageComments_DeliverCollection extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0025';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_DeliverCollection = StageComments_DeliverCollection;
+	class StageComments_DescriptionSpecialistCollectionReview extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x00210';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_DescriptionSpecialistCollectionReview = StageComments_DescriptionSpecialistCollectionReview;
+	class StageComments_EnterAcquisitionInformation extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x002';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_EnterAcquisitionInformation = StageComments_EnterAcquisitionInformation;
+	class StageComments_EnterDescription extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0026';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_EnterDescription = StageComments_EnterDescription;
+	class StageComments_FinalCuratorReview extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x00214';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_FinalCuratorReview = StageComments_FinalCuratorReview;
+	class StageComments_LabelingBarcodeAndLocationsAssigned extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x00215';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_LabelingBarcodeAndLocationsAssigned = StageComments_LabelingBarcodeAndLocationsAssigned;
+	class StageComments_PickupFromProcessor extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0029';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_PickupFromProcessor = StageComments_PickupFromProcessor;
+	class StageComments_ProcessingPlan extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0020';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_ProcessingPlan = StageComments_ProcessingPlan;
+	class StageComments_RequestMaterials extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0024';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_RequestMaterials = StageComments_RequestMaterials;
+	class StageComments_RetrieveCollectionFromCurator extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0022';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_RetrieveCollectionFromCurator = StageComments_RetrieveCollectionFromCurator;
+	class StageComments_ReviewProcessingPlan extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x0021';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_ReviewProcessingPlan = StageComments_ReviewProcessingPlan;
+	class StageComments_UploadingFindingAid extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments';
+	        this.spName = 'Stage_x0020_Comments_x0020__x00213';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_UploadingFindingAid = StageComments_UploadingFindingAid;
 
 
 /***/ }),
@@ -40747,7 +40917,7 @@
 	            return 'Moved_x0020_to_x0020_Authority_x';
 	        case 'Catalog Collection':
 	            return 'Moved_x0020_to_x0020_Catalog_x00';
-	        case 'Collections Management Collections Review':
+	        case 'Collections Management Collection Review':
 	            return 'Moved_x0020_to_x0020_Collections';
 	        case 'Complete':
 	            return 'Moved_x0020_to_x0020_Complete';
@@ -40879,7 +41049,7 @@
 	exports.createListItemPdf = createListItemPdf;
 	function getUserGroupFromRawGroupInfo(rawGroupInfo) {
 	    const userGroups = [];
-	    const adminGroup = rawGroupInfo.d.results.find((element) => element.Title === 'LTPSC Administrators');
+	    const adminGroup = rawGroupInfo.d.results.find(element => element.Title === 'LTPSC Administrators');
 	    if (adminGroup) {
 	        Object.keys(groups).forEach(groupKey => userGroups.push(groups[groupKey]));
 	    }
@@ -51278,7 +51448,7 @@
 	};
 	exports.DescriptionSpecialist = {
 	    name: 'Description Specialist',
-	    permittedViews: [Views.DescriptionSpecialistTiCollectionReview]
+	    permittedViews: [Views.DescriptionSpecialistCollectionReview]
 	};
 	exports.Cataloging = {
 	    name: 'Cataloging',
@@ -51679,6 +51849,74 @@
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
 	], ListItem.prototype, "LastStageBeforeSuspension", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0023", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00211", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00212", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0028", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0027", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0025", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00210", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x002", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0026", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00214", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00215", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0029", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0020", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0024", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0022", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x0021", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00213", void 0);
 	exports.ListItem = ListItem;
 	exports.DEFAULT_LIST_ITEM = new ListItem();
 
@@ -51698,13 +51936,13 @@
 	    'Deliver Collection',
 	    'Enter Description',
 	    'Content Review',
-	    'Collections Management Collections Review',
+	    'Collections Management Collection Review',
 	    'Pickup from Processor',
 	    'Description Specialist Collection Review',
 	    'Authority Work Review',
+	    'Final Curator Review',
 	    'Catalog Collection',
 	    'Uploading Finding Aid',
-	    'Final Curator Review',
 	    'Labeling Barcode And Locations Assigned',
 	    'Complete'
 	];
@@ -51781,105 +52019,6 @@
 	                                    { text: `${listItem.Arrangement_x0020_and_x0020_Desc0}`, style: 'tableEntry' }
 	                                ]
 	                            },
-	                        ]
-	                    ]
-	                }
-	            },
-	            {
-	                table: {
-	                    widths: [122, 122, 122, 122],
-	                    body: [
-	                        [
-	                            {
-	                                stack: [
-	                                    { text: 'Assigned for Processing the Collection', style: 'tableHeader' },
-	                                    { text: `${listItem.Assigned_x0020_for_x0020_Process}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Call Number', style: 'tableHeader' },
-	                                    { text: `${listItem.Call_x0020_Number}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Catalog Review Approval', style: 'tableHeader' },
-	                                    { text: `${listItem.Catalog_x0020_Review_x0020_Appro}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Catalog Review Date', style: 'tableHeader' },
-	                                    { text: `${listItem.Catalog_x0020_Review_x0020_Date}`, style: 'tableEntry' }
-	                                ]
-	                            }
-	                        ]
-	                    ]
-	                }
-	            },
-	            {
-	                table: {
-	                    widths: [122, 122, 122, 122],
-	                    body: [
-	                        [
-	                            {
-	                                stack: [
-	                                    { text: 'Cataloging Date', style: 'tableHeader' },
-	                                    { text: `${listItem.Cataloging_x0020_Date}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Cataloging Done', style: 'tableHeader' },
-	                                    { text: `${listItem.Cataloging_x0020_Done}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Collecting Area', style: 'tableHeader' },
-	                                    { text: `${listItem.Collecting_x0020_AreaId}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Collection Location Assigned', style: 'tableHeader' },
-	                                    { text: `${listItem.Collection_x0020_Location_x0020_}`, style: 'tableEntry' }
-	                                ]
-	                            }
-	                        ]
-	                    ]
-	                }
-	            },
-	            {
-	                table: {
-	                    widths: [122, 122, 122, 122],
-	                    body: [
-	                        [
-	                            {
-	                                stack: [
-	                                    { text: 'Collection Management Approval', style: 'tableHeader' },
-	                                    { text: `${listItem.Collection_x0020_Management_x002}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Collection Management Review Date', style: 'tableHeader' },
-	                                    { text: `${listItem.Collection_x0020_Management_x0021}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Collection Type', style: 'tableHeader' },
-	                                    { text: `${listItem.Collection_x0020_Type}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Complete', style: 'tableHeader' },
-	                                    { text: `${listItem.Complete}`, style: 'tableEntry' }
-	                                ]
-	                            }
 	                        ]
 	                    ]
 	                }

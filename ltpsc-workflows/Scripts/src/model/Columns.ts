@@ -487,7 +487,7 @@ export class StageComments_ContentReview extends Column {
 
 export class StageComments_DeliverCollection extends Column {
     displayName = 'Stage Comments'
-    spName = 'Stage Comments - Deliver Collection'
+    spName = 'Stage_x0020_Comments_x0020__x0025'
     type = 'textarea' as FieldType
 }
 

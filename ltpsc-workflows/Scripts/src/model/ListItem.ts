@@ -88,6 +88,23 @@ export class ListItem {
     @observable Moved_x0020_to_x0020_Suspended: string
     @observable Moved_x0020_to_x0020_Uploading_x: string
     @observable LastStageBeforeSuspension: string
+    @observable Stage_x0020_Comments_x0020__x0023: string // StageComments_AssignProcessor
+    @observable Stage_x0020_Comments_x0020__x00211: string // StageComments_AuthorityWorkReview
+    @observable Stage_x0020_Comments_x0020__x00212: string // StageComments_CatalogCollection
+    @observable Stage_x0020_Comments_x0020__x0028: string // Stage_x0020_Comments_x0020__x0028
+    @observable Stage_x0020_Comments_x0020__x0027: string // StageComments_ContentReview
+    @observable Stage_x0020_Comments_x0020__x0025: string // StageComments_DeliverCollection
+    @observable Stage_x0020_Comments_x0020__x00210: string // StageComments_DescriptionSpecialistCollectionReview
+    @observable Stage_x0020_Comments_x0020__x002: string // StageComments_EnterAcquisitionInformation
+    @observable Stage_x0020_Comments_x0020__x0026: string // StageComments_EnterDescription
+    @observable Stage_x0020_Comments_x0020__x00214: string // StageComments_FinalCuratorReview
+    @observable Stage_x0020_Comments_x0020__x00215: string // StageComments_LabelingBarcodeAndLocationsAssigned
+    @observable Stage_x0020_Comments_x0020__x0029: string // StageComments_PickupFromProcessor
+    @observable Stage_x0020_Comments_x0020__x0020: string // StageComments_ProcessingPlan
+    @observable Stage_x0020_Comments_x0020__x0024: string // StageComments_RequestMaterials
+    @observable Stage_x0020_Comments_x0020__x0022: string // StageComments_RetrieveCollectionFromCurator
+    @observable Stage_x0020_Comments_x0020__x0021: string // StageComments_ReviewProcessingPlan
+    @observable Stage_x0020_Comments_x0020__x00213: string // StageComments_UploadingFindingAid
 }
 
 export const DEFAULT_LIST_ITEM = new ListItem()
