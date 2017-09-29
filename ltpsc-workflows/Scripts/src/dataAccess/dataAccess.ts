@@ -27,7 +27,7 @@ export function fetchListItemsFromServer(): JQueryXHR {
     return ajax({
         url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?$filter=Stage ne 'Complete'&@target='${hostWebUrl}'`,
         method: 'GET',
-        headers: { 'Accept': 'application/json; odata=verbose' },
+        headers: { 'Accept': 'application/json; odata=verbose' }
     })
 }
 
@@ -35,7 +35,7 @@ export function fetchLookupValuesFromServer(listName: string): JQueryXHR {
     return ajax({
         url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('${listName}')/items?@target='${hostWebUrl}'`,
         method: 'GET',
-        headers: { 'Accept': 'application/json; odata=verbose' },
+        headers: { 'Accept': 'application/json; odata=verbose' }
     })
 }
 
@@ -91,5 +91,39 @@ export function savePdfToServer(pdfBuffer: ArrayBuffer, filename: string, reques
              'contentType': 'application/json; odata=verbose'
          },
          data: pdfBuffer
+    })
+}
+
+export function sendEmail(emailAddresses: string[], subject: string, body: string, requestDigest: string ): JQueryXHR {
+    return ajax({
+        url: '../_api/SP.Utilities.Utility.SendEmail',
+        method: 'POST',
+        contentType: "application/json; odata=verbose",
+        headers: {
+            "Accept": "application/json;odata=verbose",
+            "content-type": "application/json;odata=verbose",
+            "X-RequestDigest": requestDigest
+        },
+        data: JSON.stringify({
+            'properties': {
+                '__metadata': {
+                    'type': 'SP.Utilities.EmailProperties'
+                },
+                'From': 'LTPSC SharePoint Workflows',
+                'To': {
+                    'results': emailAddresses
+                },
+                'Body': body,
+                'Subject': subject
+            }
+        })
+    })
+}
+
+export function fetchGroup(group: string): JQueryXHR {
+    return ajax({
+        url: `../_api/SP.AppContextSite(@target)/web/sitegroups/getbyname('${group}')?@target='${hostWebUrl}'`,
+        method: 'GET',
+        headers: { 'Accept': 'application/json; odata=verbose' }
     })
 }

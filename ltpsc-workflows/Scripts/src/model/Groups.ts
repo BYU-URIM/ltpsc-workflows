@@ -1,4 +1,5 @@
 import * as Views from './Views'
+import { StageName } from './Stages';
 
 interface IGroup {
     name: string

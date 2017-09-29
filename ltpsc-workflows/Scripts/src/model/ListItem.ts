@@ -5,6 +5,7 @@ export class ListItem {
     @observable Id: number
     @observable Title: string
     @observable Accession_x0020_Number: string
+    @observable Appraisal_x0020_Note: string
     @observable Approve_x0020_Processing_x0020_P: boolean
     @observable Approve_x0020_Request: boolean
     @observable Arrangement_x0020_and_x0020_Desc: string
@@ -35,6 +36,8 @@ export class ListItem {
     @observable Delivery_x0020_Status: boolean
     @observable Description_x0020_of_x0020_Deacc: string
     @observable Description_x0020_of_x0020_Propo: string
+    @observable Description_x0020_Specialist_x00: string // description specialist review date
+    @observable Description_x0020_Specialist_x000: string // description specialist review comments
     @observable Expected_x0020_Delivery_x0020_Da: string
     @observable Extent_x0020__x002d__x0020_in_x0: number
     @observable Finding_x0020_Aid_x0020_Uploaded: boolean
@@ -42,6 +45,7 @@ export class ListItem {
     @observable Labeling_x0020_Barcode_x0020_Loc0: string
     @observable List_x0020_Materials_x0020_to_x0: string
     @observable Location_x0020_of_x0020_Material: string
+    @observable Location_x0020_of_x0020_Delivery: string
     @observable Monetary_x0020_Vale_x0020_of_x00: number
     @observable Pickup_x0020_Date: string
     @observable Pickup_x0020_Location: string
@@ -87,7 +91,7 @@ export class ListItem {
     @observable Moved_x0020_to_x0020_Review_x002: string
     @observable Moved_x0020_to_x0020_Suspended: string
     @observable Moved_x0020_to_x0020_Uploading_x: string
-    @observable LastStageBeforeSuspension: string
+    @observable Previous_x0020_Stage: string
     @observable Stage_x0020_Comments_x0020__x0023: string // StageComments_AssignProcessor
     @observable Stage_x0020_Comments_x0020__x00211: string // StageComments_AuthorityWorkReview
     @observable Stage_x0020_Comments_x0020__x00212: string // StageComments_CatalogCollection

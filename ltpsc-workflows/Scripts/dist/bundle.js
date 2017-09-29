@@ -36605,6 +36605,7 @@
 	const Stages_1 = __webpack_require__(425);
 	const EditFormStatusEnum_1 = __webpack_require__(427);
 	const PdfService = __webpack_require__(426);
+	const Groups = __webpack_require__(422);
 	let ListDataStore = class ListDataStore {
 	    constructor() {
 	        this.currentView = Views_2.DEAFULT_VIEW;
@@ -36685,7 +36686,8 @@
 	            }
 	            const pendingStageData = {
 	                Stage: this.currentEditItemNextStage,
-	                [general_1.getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: general_1.getFormattedDate()
+	                [general_1.getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: general_1.getFormattedDate(),
+	                Previous_x0020_Stage: this.currentEditItem.Stage
 	            };
 	            const listItemSaveInfo = yield this.saveEditItemForm(pendingStageData);
 	            let pdfSaveError = false;
@@ -36703,8 +36705,29 @@
 	                    mobx_1.runInAction(() => this.asyncPendingLockout = false);
 	                }
 	            }
+	            if (listItemSaveInfo && !pdfSaveError && pendingStageData.Stage !== Stages_1.StageOrder[Stages_1.StageOrder.length - 1]) {
+	                this.emailReceivingGroup(pendingStageData);
+	            }
 	            if (listItemSaveInfo && !pdfSaveError) {
 	                this.onSuccessfullSave(listItemSaveInfo, pendingStageData);
+	            }
+	        });
+	    }
+	    returnEditItemToInOrderPreviousStage() {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            if (!this.canSubmitCurrentItemToSameOrLowerStage) {
+	                this.raiseFormError();
+	                return;
+	            }
+	            const pendingStageData = {
+	                Stage: this.currentEditItemInOrderPreviousStage,
+	                [general_1.getMovedToColumnNameFromStageName(this.currentEditItemInOrderPreviousStage)]: general_1.getFormattedDate(),
+	                Previous_x0020_Stage: this.currentEditItem.Stage
+	            };
+	            const saveInfo = yield this.saveEditItemForm(pendingStageData);
+	            if (saveInfo) {
+	                this.emailReceivingGroup(pendingStageData);
+	                this.onSuccessfullSave(saveInfo, pendingStageData);
 	            }
 	        });
 	    }
@@ -36715,11 +36738,31 @@
 	                return;
 	            }
 	            const pendingStageData = {
-	                Stage: this.currentEditItemPreviousstage,
-	                [general_1.getMovedToColumnNameFromStageName(this.currentEditItemPreviousstage)]: general_1.getFormattedDate()
+	                Stage: this.currentEditItemPreviousStage,
+	                [general_1.getMovedToColumnNameFromStageName(this.currentEditItemPreviousStage)]: general_1.getFormattedDate(),
+	                Previous_x0020_Stage: this.currentEditItem.Stage
 	            };
 	            const saveInfo = yield this.saveEditItemForm(pendingStageData);
 	            if (saveInfo) {
+	                this.emailReceivingGroup(pendingStageData);
+	                this.onSuccessfullSave(saveInfo, pendingStageData);
+	            }
+	        });
+	    }
+	    returnEditItemToProcessor() {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            if (!this.canSubmitCurrentItemToSameOrLowerStage) {
+	                this.raiseFormError();
+	                return;
+	            }
+	            const pendingStageData = {
+	                Stage: Stages_1.StageOrder[7],
+	                [general_1.getMovedToColumnNameFromStageName(Stages_1.StageOrder[7])]: general_1.getFormattedDate(),
+	                Previous_x0020_Stage: this.currentEditItem.Stage
+	            };
+	            const saveInfo = yield this.saveEditItemForm(pendingStageData);
+	            if (saveInfo) {
+	                this.emailReceivingGroup(pendingStageData);
 	                this.onSuccessfullSave(saveInfo, pendingStageData);
 	            }
 	        });
@@ -36734,7 +36777,7 @@
 	            const pendingStageData = {
 	                Stage: 'Suspended',
 	                [general_1.getMovedToColumnNameFromStageName('Suspended')]: general_1.getFormattedDate(),
-	                LastStageBeforeSuspension: this.currentEditItem.Stage
+	                Previous_x0020_Stage: this.currentEditItem.Stage
 	            };
 	            const saveInfo = yield this.saveEditItemForm(pendingStageData);
 	            if (saveInfo) {
@@ -36817,13 +36860,16 @@
 	            return null;
 	        }
 	    }
-	    get currentEditItemPreviousstage() {
+	    get currentEditItemPreviousStage() {
+	        return this.currentEditItem.Previous_x0020_Stage || Stages_1.StageOrder[0];
+	    }
+	    get currentEditItemInOrderPreviousStage() {
 	        if (this.currentView.stageName !== 'Suspended') {
 	            const stageIndex = Stages_1.StageOrder.indexOf(this.currentEditItem.Stage);
 	            return stageIndex !== 0 ? Stages_1.StageOrder[stageIndex - 1] : null;
 	        }
 	        else {
-	            return this.currentEditItem.LastStageBeforeSuspension || Stages_1.StageOrder[0];
+	            return null;
 	        }
 	    }
 	    get currentViewListItems() {
@@ -36842,9 +36888,6 @@
 	    }
 	    get canSuspendCurrentEditItem() {
 	        return this.isCurrentUserAdmin && this.editFormDisplayStatus === EditFormStatusEnum_1.EditFormStatusEnum.DISPLAYING_EXISTING && this.currentView.stageName !== 'Suspended';
-	    }
-	    get canCreateShippingLabel() {
-	        return this.currentEditItem.Stage === 'Pickup from Processor';
 	    }
 	    get selectedItemID() {
 	        return this.currentViewListItems[this.selectedItemIndex].Id;
@@ -36887,6 +36930,22 @@
 	        }
 	        this.currentEditItem = ListItem_1.DEFAULT_LIST_ITEM;
 	        this.editFormDisplayStatus = EditFormStatusEnum_1.EditFormStatusEnum.CLOSED;
+	    }
+	    emailReceivingGroup(pendingStageData) {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            const receivingGroupObjectName = Object.keys(Groups).find(groupName => Groups[groupName].permittedViews.find((view) => view.stageName === pendingStageData.Stage));
+	            const groupName = Groups[receivingGroupObjectName].name;
+	            try {
+	                mobx_1.runInAction(() => this.asyncPendingLockout = true);
+	                yield PersistorService.emailGroup(groupName, 'Pending LTPSC Item', `The ${groupName} group has a pending LTPSC item due for processing.`);
+	            }
+	            catch (error) {
+	                this.raiseError(`save was successful, however, an error occurred while emailing group members`, error);
+	            }
+	            finally {
+	                mobx_1.runInAction(() => this.asyncPendingLockout = false);
+	            }
+	        });
 	    }
 	};
 	__decorate([
@@ -36984,7 +37043,19 @@
 	    __metadata('design:type', Function), 
 	    __metadata('design:paramtypes', []), 
 	    __metadata('design:returntype', Promise)
+	], ListDataStore.prototype, "returnEditItemToInOrderPreviousStage", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', Promise)
 	], ListDataStore.prototype, "returnEditItemToPreviousStage", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', Promise)
+	], ListDataStore.prototype, "returnEditItemToProcessor", null);
 	__decorate([
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
@@ -37062,7 +37133,11 @@
 	__decorate([
 	    mobx_1.computed, 
 	    __metadata('design:type', (typeof (_f = typeof Stages_1.StageName !== 'undefined' && Stages_1.StageName) === 'function' && _f) || Object)
-	], ListDataStore.prototype, "currentEditItemPreviousstage", null);
+	], ListDataStore.prototype, "currentEditItemPreviousStage", null);
+	__decorate([
+	    mobx_1.computed, 
+	    __metadata('design:type', (typeof (_g = typeof Stages_1.StageName !== 'undefined' && Stages_1.StageName) === 'function' && _g) || Object)
+	], ListDataStore.prototype, "currentEditItemInOrderPreviousStage", null);
 	__decorate([
 	    mobx_1.computed, 
 	    __metadata('design:type', Object)
@@ -37082,10 +37157,6 @@
 	__decorate([
 	    mobx_1.computed, 
 	    __metadata('design:type', Object)
-	], ListDataStore.prototype, "canCreateShippingLabel", null);
-	__decorate([
-	    mobx_1.computed, 
-	    __metadata('design:type', Object)
 	], ListDataStore.prototype, "selectedItemID", null);
 	__decorate([
 	    mobx_1.computed, 
@@ -37094,15 +37165,21 @@
 	__decorate([
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
-	    __metadata('design:paramtypes', [(typeof (_g = typeof Stages_1.IPendingStageData !== 'undefined' && Stages_1.IPendingStageData) === 'function' && _g) || Object]), 
+	    __metadata('design:paramtypes', [(typeof (_h = typeof Stages_1.IPendingStageData !== 'undefined' && Stages_1.IPendingStageData) === 'function' && _h) || Object]), 
 	    __metadata('design:returntype', Object)
 	], ListDataStore.prototype, "saveEditItemForm", null);
 	__decorate([
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
-	    __metadata('design:paramtypes', [Object, (typeof (_h = typeof Stages_1.IPendingStageData !== 'undefined' && Stages_1.IPendingStageData) === 'function' && _h) || Object]), 
+	    __metadata('design:paramtypes', [Object, (typeof (_j = typeof Stages_1.IPendingStageData !== 'undefined' && Stages_1.IPendingStageData) === 'function' && _j) || Object]), 
 	    __metadata('design:returntype', void 0)
 	], ListDataStore.prototype, "onSuccessfullSave", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', [(typeof (_k = typeof Stages_1.IPendingStageData !== 'undefined' && Stages_1.IPendingStageData) === 'function' && _k) || Object]), 
+	    __metadata('design:returntype', Promise)
+	], ListDataStore.prototype, "emailReceivingGroup", null);
 	ListDataStore = __decorate([
 	    core_decorators_1.autobind,
 	    inversify_1.injectable(), 
@@ -37110,7 +37187,7 @@
 	], ListDataStore);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = ListDataStore;
-	var _a, _b, _c, _d, _e, _f, _g, _h;
+	var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 
 
 /***/ }),
@@ -39803,7 +39880,13 @@
 	        new Cols.Restrictions(),
 	        new Cols.AppraisalNote(),
 	        new Cols.StageComments_ProcessingPlan()
-	    ]
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'generate pickup ticket',
+	            composeAction: function (store) {
+	                return store.createPickupTicket;
+	            }
+	        }]
 	};
 	exports.ReviewProcessingPlan = {
 	    stageName: 'Review Processing Plan',
@@ -39845,7 +39928,7 @@
 	    stageName: 'Assign Processor',
 	    columns: [
 	        new Cols.Title().makeRequired(),
-	        new Cols.CallNumber(),
+	        new Cols.CallNumber().makeDisplayOnly(),
 	        new Cols.CollectionType().makeRequired(),
 	        new Cols.CollectingArea().makeRequired(),
 	        new Cols.DescriptionOfProposedProcessing(),
@@ -39903,7 +39986,13 @@
 	        new Cols.VaultMaterialsIncluded(),
 	        new Cols.ListMaterialsToBePlacedIntoVault(),
 	        new Cols.StageComments_EnterDescription()
-	    ]
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'Return to Sender of Comments',
+	            composeAction: function (store) {
+	                return store.returnEditItemToPreviousStage;
+	            }
+	        }]
 	};
 	exports.ContentReview = {
 	    stageName: 'Content Review',
@@ -39929,7 +40018,13 @@
 	        new Cols.SupervisorApproval(),
 	        new Cols.ArrangementAndDescriptionComments(),
 	        new Cols.StageComments_ContentReview()
-	    ]
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'Return to Processor - Enter Description',
+	            composeAction: function (store) {
+	                return store.returnEditItemToProcessor;
+	            }
+	        }]
 	};
 	exports.CollectionsManagementCollectionReview = {
 	    stageName: 'Collections Management Collection Review',
@@ -39942,6 +40037,8 @@
 	        new Cols.ExtentInLinearFt().makeDisplayOnly(),
 	        new Cols.ProcessingLevel().makeDisplayOnly(),
 	        new Cols.LocationOfMaterials().makeDisplayOnly(),
+	        new Cols.CollectionManagementReviewDate(),
+	        new Cols.CollectionManagementComments(),
 	        new Cols.ConditionReportRecommendations(),
 	        new Cols.ConditionRecommendationsComments(),
 	        new Cols.Deaccession(),
@@ -39955,7 +40052,13 @@
 	        new Cols.SupervisorApproval(),
 	        new Cols.ArrangementAndDescriptionComments(),
 	        new Cols.StageComments_CollectionsManagementCollectionReview()
-	    ]
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'Return to Processor - Enter Description',
+	            composeAction: function (store) {
+	                return store.returnEditItemToProcessor;
+	            }
+	        }]
 	};
 	exports.PickupFromProcessor = {
 	    stageName: 'Pickup from Processor',
@@ -39994,8 +40097,16 @@
 	        new Cols.SupervisorReviewDate().makeRequired(),
 	        new Cols.SupervisorApproval(),
 	        new Cols.ArrangementAndDescriptionComments(),
+	        new Cols.DescriptionSpecialistReviewDate(),
+	        new Cols.DescriptionSpecialistReviewComments(),
 	        new Cols.StageComments_DescriptionSpecialistCollectionReview()
-	    ]
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'Return to Processor - Enter Description',
+	            composeAction: function (store) {
+	                return store.returnEditItemToProcessor;
+	            }
+	        }]
 	};
 	exports.AuthorityWorkReview = {
 	    stageName: 'Authority Work Review',
@@ -40018,35 +40129,16 @@
 	        new Cols.SupervisorReviewDate(),
 	        new Cols.SupervisorApproval().makeDisplayOnly(),
 	        new Cols.ArrangementAndDescriptionComments(),
-	        new Cols.CollectionManagementReviewDate(),
-	        new Cols.CollectionManagementComments(),
 	        new Cols.CatalogReviewDate(),
 	        new Cols.CatalogReviewComments(),
 	        new Cols.StageComments_AuthorityWorkReview()
-	    ]
-	};
-	exports.CatalogCollection = {
-	    stageName: 'Catalog Collection',
-	    columns: [
-	        new Cols.Title().makeDisplayOnly(),
-	        new Cols.AccessionNumber().makeDisplayOnly(),
-	        new Cols.CallNumber().makeDisplayOnly(),
-	        new Cols.CollectingArea().makeDisplayOnly(),
-	        new Cols.CatalogingDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
-	        new Cols.CatalogingDone().makeRequired(),
-	        new Cols.StageComments_CatalogCollection()
-	    ]
-	};
-	exports.UploadingFindingAid = {
-	    stageName: 'Uploading Finding Aid',
-	    columns: [
-	        new Cols.Title().makeDisplayOnly(),
-	        new Cols.AccessionNumber().makeDisplayOnly(),
-	        new Cols.CallNumber().makeDisplayOnly(),
-	        new Cols.UploadDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
-	        new Cols.FindingAidUploaded().makeRequired(),
-	        new Cols.StageComments_UploadingFindingAid()
-	    ]
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'Return to Processor - Enter Description',
+	            composeAction: function (store) {
+	                return store.returnEditItemToProcessor;
+	            }
+	        }]
 	};
 	exports.FinalCuratorReview = {
 	    stageName: 'Final Curator Review',
@@ -40075,6 +40167,29 @@
 	        new Cols.StageComments_FinalCuratorReview()
 	    ]
 	};
+	exports.CatalogCollection = {
+	    stageName: 'Catalog Collection',
+	    columns: [
+	        new Cols.Title().makeDisplayOnly(),
+	        new Cols.AccessionNumber().makeDisplayOnly(),
+	        new Cols.CallNumber().makeDisplayOnly(),
+	        new Cols.CollectingArea().makeDisplayOnly(),
+	        new Cols.CatalogingDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
+	        new Cols.CatalogingDone().makeRequired(),
+	        new Cols.StageComments_CatalogCollection()
+	    ]
+	};
+	exports.UploadingFindingAid = {
+	    stageName: 'Uploading Finding Aid',
+	    columns: [
+	        new Cols.Title().makeDisplayOnly(),
+	        new Cols.AccessionNumber().makeDisplayOnly(),
+	        new Cols.CallNumber().makeDisplayOnly(),
+	        new Cols.UploadDate().setDefaultValue(general_1.getFormattedDate()).makeRequired(),
+	        new Cols.FindingAidUploaded().makeRequired(),
+	        new Cols.StageComments_UploadingFindingAid()
+	    ]
+	};
 	exports.LabelingBarcodeAndLocationAssigned = {
 	    stageName: 'Labeling Barcode And Locations Assigned',
 	    columns: [
@@ -40096,8 +40211,14 @@
 	        new Cols.Title().makeDisplayOnly(),
 	        new Cols.AccessionNumber().makeDisplayOnly(),
 	        new Cols.CallNumber().makeDisplayOnly(),
-	        new Cols.LastStageBeforeSuspension().makeDisplayOnly()
-	    ]
+	        new Cols.PreviousStage().makeDisplayOnly()
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'End Suspension - Return to Previous Stage',
+	            composeAction: function (store) {
+	                return store.returnEditItemToPreviousStage;
+	            }
+	        }]
 	};
 	exports.DEAFULT_VIEW = {
 	    stageName: 'Default',
@@ -40407,6 +40528,24 @@
 	    }
 	}
 	exports.DescriptionOfProposedDeaccession = DescriptionOfProposedDeaccession;
+	class DescriptionSpecialistReviewComments extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Description Specialist Review Comments';
+	        this.spName = 'Description_x0020_Specialist_x000';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.DescriptionSpecialistReviewComments = DescriptionSpecialistReviewComments;
+	class DescriptionSpecialistReviewDate extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Description Specialist Review Date';
+	        this.spName = 'Description_x0020_Specialist_x00';
+	        this.type = 'text';
+	    }
+	}
+	exports.DescriptionSpecialistReviewDate = DescriptionSpecialistReviewDate;
 	class ExpectedDeliveryDate extends Column {
 	    constructor() {
 	        super(...arguments);
@@ -40734,15 +40873,15 @@
 	    }
 	}
 	exports.CollectionLocationAssignmentDate = CollectionLocationAssignmentDate;
-	class LastStageBeforeSuspension extends Column {
+	class PreviousStage extends Column {
 	    constructor() {
 	        super(...arguments);
-	        this.displayName = 'Last Stage Before Suspension';
-	        this.spName = 'LastStageBeforeSuspension';
+	        this.displayName = 'Previous Stage';
+	        this.spName = 'Previous_x0020_Stage';
 	        this.type = 'text';
 	    }
 	}
-	exports.LastStageBeforeSuspension = LastStageBeforeSuspension;
+	exports.PreviousStage = PreviousStage;
 	class StageComments_AssignProcessor extends Column {
 	    constructor() {
 	        super(...arguments);
@@ -40947,6 +41086,11 @@
 	            return 'Moved_x0020_to_x0020_Suspended';
 	        case 'Uploading Finding Aid':
 	            return 'Moved_x0020_to_x0020_Uploading_x';
+	        case 'Request Materials':
+	            return 'Moved_x0020_to_x0020_Request_x00';
+	        default:
+	            throw new Error(`Stage '${stageName}' is not being mapped to a 'Moved to ___' column. Either the Moved to ${stageName} column does not exist in SharePoint
+	                or this function is not correctly mapping the stage name to the appropriate SharePoint column name.`);
 	    }
 	}
 	exports.getMovedToColumnNameFromStageName = getMovedToColumnNameFromStageName;
@@ -41047,6 +41191,16 @@
 	    });
 	}
 	exports.createListItemPdf = createListItemPdf;
+	function emailGroup(group, subject, body) {
+	    return __awaiter(this, void 0, void 0, function* () {
+	        const rawSecurityInfo = yield dao.fetchSecurityValidation();
+	        const rawGroupData = yield dao.fetchGroup(group);
+	        const rawGroupUserData = yield dao.genericGetByEndpoint(rawGroupData.d.Users.__deferred.uri);
+	        const emailAddresses = rawGroupUserData.d.results.map(user => user.Email);
+	        yield dao.sendEmail(['connor.moody@byu.edu'], subject, body, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue);
+	    });
+	}
+	exports.emailGroup = emailGroup;
 	function getUserGroupFromRawGroupInfo(rawGroupInfo) {
 	    const userGroups = [];
 	    const adminGroup = rawGroupInfo.d.results.find(element => element.Title === 'LTPSC Administrators');
@@ -41093,7 +41247,7 @@
 	    return jquery_1.ajax({
 	        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('LTPSC')/items?$filter=Stage ne 'Complete'&@target='${hostWebUrl}'`,
 	        method: 'GET',
-	        headers: { 'Accept': 'application/json; odata=verbose' },
+	        headers: { 'Accept': 'application/json; odata=verbose' }
 	    });
 	}
 	exports.fetchListItemsFromServer = fetchListItemsFromServer;
@@ -41101,7 +41255,7 @@
 	    return jquery_1.ajax({
 	        url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('${listName}')/items?@target='${hostWebUrl}'`,
 	        method: 'GET',
-	        headers: { 'Accept': 'application/json; odata=verbose' },
+	        headers: { 'Accept': 'application/json; odata=verbose' }
 	    });
 	}
 	exports.fetchLookupValuesFromServer = fetchLookupValuesFromServer;
@@ -41160,6 +41314,40 @@
 	    });
 	}
 	exports.savePdfToServer = savePdfToServer;
+	function sendEmail(emailAddresses, subject, body, requestDigest) {
+	    return jquery_1.ajax({
+	        url: '../_api/SP.Utilities.Utility.SendEmail',
+	        method: 'POST',
+	        contentType: "application/json; odata=verbose",
+	        headers: {
+	            "Accept": "application/json;odata=verbose",
+	            "content-type": "application/json;odata=verbose",
+	            "X-RequestDigest": requestDigest
+	        },
+	        data: JSON.stringify({
+	            'properties': {
+	                '__metadata': {
+	                    'type': 'SP.Utilities.EmailProperties'
+	                },
+	                'From': 'LTPSC SharePoint Workflows',
+	                'To': {
+	                    'results': emailAddresses
+	                },
+	                'Body': body,
+	                'Subject': subject
+	            }
+	        })
+	    });
+	}
+	exports.sendEmail = sendEmail;
+	function fetchGroup(group) {
+	    return jquery_1.ajax({
+	        url: `../_api/SP.AppContextSite(@target)/web/sitegroups/getbyname('${group}')?@target='${hostWebUrl}'`,
+	        method: 'GET',
+	        headers: { 'Accept': 'application/json; odata=verbose' }
+	    });
+	}
+	exports.fetchGroup = fetchGroup;
 
 
 /***/ }),
@@ -51519,6 +51707,10 @@
 	], ListItem.prototype, "Accession_x0020_Number", void 0);
 	__decorate([
 	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Appraisal_x0020_Note", void 0);
+	__decorate([
+	    mobx_1.observable, 
 	    __metadata('design:type', Boolean)
 	], ListItem.prototype, "Approve_x0020_Processing_x0020_P", void 0);
 	__decorate([
@@ -51640,6 +51832,14 @@
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
+	], ListItem.prototype, "Description_x0020_Specialist_x00", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Description_x0020_Specialist_x000", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
 	], ListItem.prototype, "Expected_x0020_Delivery_x0020_Da", void 0);
 	__decorate([
 	    mobx_1.observable, 
@@ -51665,6 +51865,10 @@
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
 	], ListItem.prototype, "Location_x0020_of_x0020_Material", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Location_x0020_of_x0020_Delivery", void 0);
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', Number)
@@ -51848,7 +52052,7 @@
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
-	], ListItem.prototype, "LastStageBeforeSuspension", void 0);
+	], ListItem.prototype, "Previous_x0020_Stage", void 0);
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
@@ -51978,77 +52182,11 @@
 	function generateListItemPdfBuffer(listItem) {
 	    return __awaiter(this, void 0, void 0, function* () {
 	        const pdfObject = createListItemPdfMakeObject(listItem);
-	        pdfObject.open();
-	        if (pdfObject)
-	            throw new Error('pdf edit bail out');
 	        const pdfArrayBuffer = yield getPdfArrayBuffer(pdfObject);
 	        return pdfArrayBuffer;
 	    });
 	}
 	exports.generateListItemPdfBuffer = generateListItemPdfBuffer;
-	function createListItemPdfMakeObject(listItem) {
-	    const docDefinition = {
-	        content: [
-	            { text: `LTPSC Item ${listItem.Call_x0020_Number}`, style: 'header' },
-	            {
-	                table: {
-	                    widths: [122, 122, 122, 122],
-	                    body: [
-	                        [
-	                            {
-	                                stack: [
-	                                    { text: 'Accession Number', style: 'tableHeader' },
-	                                    { text: `${listItem.Accession_x0020_Number}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Approve Processing Plan', style: 'tableHeader' },
-	                                    { text: `${listItem.Approve_x0020_Processing_x0020_P}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Approve Request', style: 'tableHeader' },
-	                                    { text: `${listItem.Approve_x0020_Request}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                            {
-	                                stack: [
-	                                    { text: 'Arrangement and Description Date', style: 'tableHeader' },
-	                                    { text: `${listItem.Arrangement_x0020_and_x0020_Desc0}`, style: 'tableEntry' }
-	                                ]
-	                            },
-	                        ]
-	                    ]
-	                }
-	            }
-	        ],
-	        styles: {
-	            header: {
-	                alignment: 'center',
-	                bold: true,
-	                margin: [0, 10, 0, 30],
-	                fontSize: 25
-	            },
-	            subheader: {
-	                fontSize: 18,
-	                bold: true,
-	                margin: [0, 10, 0, 7]
-	            },
-	            tableHeader: {
-	                bold: true,
-	                fontSize: 11,
-	            },
-	            tableEntry: {
-	                color: '#7F7D7D',
-	                bold: true,
-	                margin: [0, 4, 0, 0]
-	            }
-	        }
-	    };
-	    return createPdf(docDefinition);
-	}
 	function getPdfArrayBuffer(pdfmakeObject) {
 	    let bufferPromise = new Promise((resolve, reject) => {
 	        pdfmakeObject.getBuffer((bufferView) => {
@@ -52057,6 +52195,251 @@
 	        });
 	    });
 	    return bufferPromise;
+	}
+	function createListItemPdfMakeObject(listItem) {
+	    const docDefinition = generateListItemPdfDefinition([
+	        { header: `LTPSC Item ${listItem.Call_x0020_Number}` },
+	        { subheader: 'Enter Acquisition Information' },
+	        { table: {
+	                'Title': listItem.Title,
+	                'Accession Number': listItem.Accession_x0020_Number,
+	                'Call Numbert': listItem.Call_x0020_Number,
+	                'Collection Type': listItem.Collection_x0020_Type,
+	            } },
+	        { table: {
+	                'Monetary Value of Materials': listItem.Monetary_x0020_Vale_x0020_of_x00,
+	                'Collecting Area': listItem.Collecting_x0020_AreaId,
+	                'Submitting Curator': listItem.Submitting_x0020_Curator
+	            } },
+	        { table: {
+	                'Stage Comments - Enter Acquisition Information': listItem.Stage_x0020_Comments_x0020__x002
+	            } },
+	        { subheader: 'Processing Plan' },
+	        { table: {
+	                'Processing Plan Date': listItem.Processing_x0020_Plan_x0020_Date,
+	                'Extent In Linear Feature': listItem.Extent_x0020__x002d__x0020_in_x0,
+	                'Current Arrangement': listItem.Current_x0020_Arrangement
+	            } },
+	        { table: {
+	                'Processing Level': listItem.Processing_x0020_Level,
+	                'Deaccession': listItem.Deaccession_x003F_,
+	                'Restrictions': listItem.Restrictions
+	            } },
+	        { table: {
+	                'Condition Report - Recommendations': listItem.Condition_x0020_Recommendations_,
+	                'Appriasal Note': listItem.Appraisal_x0020_Note
+	            } },
+	        { table: {
+	                'Proposed Series Arrangement': listItem.Proposed_x0020_Series_x0020_Arra,
+	                'Description of Proposed Deaccession': listItem.Description_x0020_of_x0020_Propo
+	            } },
+	        { table: {
+	                'Stage Comments - Processing Plan': listItem.Stage_x0020_Comments_x0020__x0020
+	            } },
+	        { subheader: 'Review Processing Plan' },
+	        { table: {
+	                'Approve Processing Plan': listItem.Approve_x0020_Processing_x0020_P,
+	                'Processing Plan Revision Date': listItem.Process_x0020_Plan_x0020_Revisio
+	            } },
+	        { table: {
+	                'Condition Recommendations Comments': listItem.Condition_x0020_Recommendations_,
+	                'Comments on Processing Plan': listItem.Comments_x0020_on_x0020_Processi,
+	            } },
+	        { table: {
+	                'Stage Comments - Review Processing Plan': 'Stage_x0020_Comments_x0020__x0021'
+	            } },
+	        { subheader: 'Retrieve Collection from Curator' },
+	        { table: {
+	                'Pickup Location': listItem.Pickup_x0020_Location,
+	                'Pickup Date': listItem.Pickup_x0020_Date,
+	                'Valut Matrials Included': listItem.Vault_x0020_Materials_x0020_Incl
+	            } },
+	        { table: {
+	                'List Materials to be Placed into Vault': listItem.List_x0020_Materials_x0020_to_x0,
+	                'Collection Location Assigned': listItem.Collection_x0020_Location_x0020_,
+	            } },
+	        { table: {
+	                'Stage Comments - Retrieve Collection from Curator': listItem.Stage_x0020_Comments_x0020__x0022
+	            } },
+	        { subheader: 'Assign Processor' },
+	        { table: {
+	                'Approve Request': listItem.Approve_x0020_Request,
+	                'Review Date': listItem.Review_x0020_Date,
+	                'Assigned Processor': listItem.Assigned_x0020_Processor,
+	                'Delivery Location': listItem.Delivery_x0020_Location
+	            } },
+	        { table: {
+	                'Description of Proposed Processing': listItem.Description_x0020_of_x0020_Propo0
+	            } },
+	        { table: {
+	                'Stage Comments - Assign Processor': listItem.Stage_x0020_Comments_x0020__x0023
+	            } },
+	        { subheader: 'Request Materials' },
+	        { table: {
+	                'Location of Delivery': listItem.Location_x0020_of_x0020_Delivery,
+	                'Stage Comments - Request Materials': listItem.Stage_x0020_Comments_x0020__x0024
+	            } },
+	        { subheader: 'Deliver Collection' },
+	        { table: {
+	                'Location of Materials': listItem.Location_x0020_of_x0020_Material,
+	                'Expected Delivery Date': listItem.Expected_x0020_Delivery_x0020_Da,
+	                'Component Request': listItem.Component_x0020_Request,
+	                'Component Request ID': listItem.Component_x0020_Request_x0020_ID
+	            } },
+	        { table: {
+	                'Delivery Status': listItem.Delivery_x0020_Status,
+	                'Delivery Explanation': listItem.Deliver_x0020_Explanation,
+	                'Date Delivered': listItem.Deliver_x0020_Explanation
+	            } },
+	        { table: {
+	                'Stage Comments - Deliver Collection': listItem.Stage_x0020_Comments_x0020__x0025
+	            } },
+	        { subheader: 'Enter Description' },
+	        { table: {
+	                'Restrictions': listItem.Restrictions,
+	                'Restrictions Comments': listItem.Restrictions_x002d_Comments
+	            } },
+	        { table: {
+	                'Description of Deaccessioned Materials': listItem.Description_x0020_of_x0020_Deacc,
+	                'Arrangement and Description Date': listItem.Arrangement_x0020_and_x0020_Desc0
+	            } },
+	        { table: {
+	                'Stage Comments - Enter Description': listItem.Stage_x0020_Comments_x0020__x0026
+	            } },
+	        { subheader: 'Content Review' },
+	        { table: {
+	                'Supervisor Review Date': listItem.Supervisor_x0020_Review_x0020_Da,
+	                'Supervisor Approval': listItem.Supervisor_x0020_Approval
+	            } },
+	        { table: {
+	                'Arrangement and Description Comments': listItem.Arrangement_x0020_and_x0020_Desc,
+	                'Stage Comments - Content Review': listItem.Stage_x0020_Comments_x0020__x0027
+	            } },
+	        { subheader: 'Collections Management Collection Review' },
+	        { table: {
+	                'Stage Comments: Collections Management Collection Review': listItem.Stage_x0020_Comments_x0020__x0028
+	            } },
+	        { subheader: 'Pickup from Processor' },
+	        { table: {
+	                'Pickup Shelving Location': listItem.Pickup_x0020_Shelving_x0020_Loca,
+	                'Pickup Shelving Date': listItem.Pickup_x0020_Shelving_x0020_Date
+	            } },
+	        { table: {
+	                'Stage Comments: Pickup from Processor': listItem.Stage_x0020_Comments_x0020__x0029
+	            } },
+	        { subheader: 'Description Specialist Collection Review' },
+	        { table: {
+	                'Stage Comments - Description Specialist Collections Review': listItem.Stage_x0020_Comments_x0020__x00210
+	            } },
+	        { subheader: 'Authority Work Review' },
+	        { table: {
+	                'Collection Management Review Date': listItem.Collection_x0020_Management_x0021,
+	                'Collection Management Comments': listItem.Collection_x0020_Management_x0020,
+	            } },
+	        { table: {
+	                'Catalog Review Date': listItem.Catalog_x0020_Review_x0020_Date,
+	                'Catalog Review Comments': listItem.Catalog_x0020_Review_x0020_Comme
+	            } },
+	        { table: {
+	                'Stage Comments - Authority Work Review': listItem.Stage_x0020_Comments_x0020__x00211
+	            } },
+	        { subeader: 'Final Curator Review' },
+	        { table: {
+	                'Stage Comments - Catalog Collection': listItem.Stage_x0020_Comments_x0020__x00214
+	            } },
+	        { subheader: 'Catalog Collection' },
+	        { table: {
+	                'Cataloging Date': listItem.Cataloging_x0020_Date,
+	                'Cataloging Done': listItem.Cataloging_x0020_Done
+	            } },
+	        { table: {
+	                'Stage Comments - Catalog Collection': listItem.Stage_x0020_Comments_x0020__x00213
+	            } },
+	        { subheader: 'Upload Finding Aid' },
+	        { table: {
+	                'Upload Date': listItem.Upload_x0020_Date,
+	                'Finding Aid Uploaded': listItem.Finding_x0020_Aid_x0020_Uploaded
+	            } },
+	        { table: {
+	                'Stage Comments - Upload Finding Aid': listItem.Stage_x0020_Comments_x0020__x00213
+	            } },
+	        { subheader: 'Labeling Barcode and Location Assigned' },
+	        { table: {
+	                'Labeling Date': listItem.Labeling_x0020_Date,
+	                'Labeling Done': listItem.Labeling_x0020_Done,
+	                'Barcode Date': listItem.Barcode_x0020_Date
+	            } },
+	        { table: {
+	                'Barcoding Complete': listItem.Barcoding_x0020_Complete,
+	                'Collection Location Assignment Date': listItem.Collection_x0020_Assignment_x002
+	            } },
+	        { table: {
+	                'Stage Comments - Labeling Barcode and Location Assigned': listItem.Stage_x0020_Comments_x0020__x00214
+	            } }
+	    ]);
+	    return createPdf(docDefinition);
+	}
+	function generateListItemPdfDefinition(rowArray) {
+	    const doc = {};
+	    const widthArrays = [
+	        [509],
+	        [250, 250],
+	        [164, 163, 164],
+	        [121, 120, 120, 121]
+	    ];
+	    doc.styles = {
+	        header: {
+	            alignment: 'center',
+	            bold: true,
+	            margin: [0, 10, 0, 30],
+	            fontSize: 25
+	        },
+	        subheader: {
+	            fontSize: 18,
+	            bold: true,
+	            margin: [0, 25, 0, 7]
+	        },
+	        tableHeader: {
+	            bold: true,
+	            fontSize: 11,
+	        },
+	        tableEntry: {
+	            color: '#7F7D7D',
+	            bold: true,
+	            margin: [0, 4, 0, 0]
+	        }
+	    };
+	    doc.content = [];
+	    rowArray.forEach((row, i) => {
+	        doc.content[i] = {};
+	        if (row.header) {
+	            doc.content[i].text = row.header;
+	            doc.content[i].style = 'header';
+	        }
+	        else if (row.subheader) {
+	            doc.content[i].text = row.subheader;
+	            doc.content[i].style = 'subheader';
+	            doc.content[i].headlineLevel = 1;
+	        }
+	        else if (row.table) {
+	            doc.content[i].table = {};
+	            doc.content[i].table.widths = widthArrays[Object.keys(row.table).length - 1];
+	            doc.content[i].table.body = [[]];
+	            for (let entryHeader in row.table) {
+	                const tableEntry = {
+	                    stack: [
+	                        { text: entryHeader, style: 'tableHeader', headlineLevel: 2 },
+	                        { text: row.table[entryHeader] || ' ', style: 'tableEntry', headlineLevel: 2 }
+	                    ]
+	                };
+	                doc.content[i].table.body[0].push(tableEntry);
+	            }
+	        }
+	    });
+	    doc.pageBreakBefore = function (currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
+	        return currentNode.style === 'subheader' && !followingNodesOnPage.find(node => node.style === 'subheader');
+	    };
+	    return doc;
 	}
 
 
@@ -59259,30 +59642,30 @@
 	        const validationState = this.listDataStore.currentEditItemValidationState;
 	        return (React.createElement(Dialog_1.default, {title: `${this.listDataStore.currentView.stageName}: ${this.listDataStore.editFormDisplayStatus === EditFormStatusEnum_1.EditFormStatusEnum.DISPLAYING_NEW ? 'New' : 'Edit'} Item`, autoScrollBodyContent: true, actions: actions, modal: true, open: this.listDataStore.isDisplayEditItemForm, contentStyle: Styles_EditItemForm_1.formModalStyle}, 
 	            React.createElement("div", {style: Styles_EditItemForm_1.inputFieldStyles}, 
-	                this.listDataStore.currentEditItemPreviousstage &&
-	                    (React.createElement(RaisedButton_1.default, {style: Styles_EditItemForm_1.formButtonStyle, label: `return to previous stage - ${this.listDataStore.currentEditItemPreviousstage}`, onClick: this.listDataStore.returnEditItemToPreviousStage, disabled: this.listDataStore.asyncPendingLockout})), 
+	                this.listDataStore.currentEditItemInOrderPreviousStage &&
+	                    (React.createElement(RaisedButton_1.default, {style: Styles_EditItemForm_1.formButtonStyle, label: `return to previous stage - ${this.listDataStore.currentEditItemInOrderPreviousStage}`, onClick: this.listDataStore.returnEditItemToInOrderPreviousStage, disabled: this.listDataStore.asyncPendingLockout})), 
 	                this.listDataStore.currentView.columns.map((column, index) => {
 	                    const updateFunction = (e, newValue) => this.listDataStore.updateCurrentEditItem(column.spName, newValue);
 	                    if (column.type === 'text') {
-	                        return React.createElement(TextField_1.default, {value: this.listDataStore.currentEditItem[column.spName] || '', key: index, fullWidth: true, disabled: column.displayOnly, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, onChange: updateFunction, errorText: validationState[column.spName]});
+	                        return React.createElement(TextField_1.default, {value: this.listDataStore.currentEditItem[column.spName] || '', key: index, fullWidth: true, disabled: column.displayOnly, floatingLabelStyle: Styles_EditItemForm_1.labelStyle, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, onChange: updateFunction, errorText: validationState[column.spName]});
 	                    }
 	                    else if (column.type === 'textarea') {
-	                        return React.createElement(TextField_1.default, {key: index, fullWidth: true, multiLine: true, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, disabled: column.displayOnly, onChange: updateFunction, value: this.listDataStore.currentEditItem[column.spName] || '', errorText: validationState[column.spName]});
+	                        return React.createElement(TextField_1.default, {key: index, fullWidth: true, multiLine: true, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, disabled: column.displayOnly, onChange: updateFunction, value: this.listDataStore.currentEditItem[column.spName] || '', errorText: validationState[column.spName], floatingLabelStyle: Styles_EditItemForm_1.labelStyle});
 	                    }
 	                    else if (column.type === 'choice') {
-	                        return (React.createElement(SelectField_1.default, {value: this.listDataStore.currentEditItem[column.spName] || '', key: index, fullWidth: true, disabled: column.displayOnly, onChange: (e, key, payload) => updateFunction(e, payload), floatingLabelText: column.required ? `${column.displayName}*` : column.displayName}, column.metadata.choices.map((choice, index) => (React.createElement(MenuItem_1.default, {key: index, value: choice, primaryText: choice})))));
+	                        return (React.createElement(SelectField_1.default, {value: this.listDataStore.currentEditItem[column.spName] || '', key: index, fullWidth: true, disabled: column.displayOnly, floatingLabelStyle: Styles_EditItemForm_1.labelStyle, onChange: (e, key, payload) => updateFunction(e, payload), floatingLabelText: column.required ? `${column.displayName}*` : column.displayName}, column.metadata.choices.map((choice, index) => (React.createElement(MenuItem_1.default, {key: index, value: choice, primaryText: choice})))));
 	                    }
 	                    else if (column.type === 'lookup') {
-	                        return (React.createElement(SelectField_1.default, {value: this.listDataStore.currentEditItem[column.spName], key: index, fullWidth: true, disabled: column.displayOnly, onChange: (e, key, payload) => updateFunction(e, payload), floatingLabelText: column.required ? `${column.displayName}*` : column.displayName}, Object.keys(this.listDataStore.lookupValues.get(column.spName)).map((lookupId, index) => (React.createElement(MenuItem_1.default, {key: index, value: Number(lookupId), primaryText: this.listDataStore.lookupValues.get(column.spName)[lookupId]})))));
+	                        return (React.createElement(SelectField_1.default, {value: this.listDataStore.currentEditItem[column.spName], key: index, fullWidth: true, floatingLabelStyle: Styles_EditItemForm_1.labelStyle, disabled: column.displayOnly, onChange: (e, key, payload) => updateFunction(e, payload), floatingLabelText: column.required ? `${column.displayName}*` : column.displayName}, Object.keys(this.listDataStore.lookupValues.get(column.spName)).map((lookupId, index) => (React.createElement(MenuItem_1.default, {key: index, value: Number(lookupId), primaryText: this.listDataStore.lookupValues.get(column.spName)[lookupId]})))));
 	                    }
 	                    else if (column.type === 'checkbox') {
-	                        return React.createElement(Checkbox_1.default, {key: index, style: Styles_EditItemForm_1.checkboxStyle, label: column.displayName, disabled: column.displayOnly, onCheck: updateFunction, checked: !!this.listDataStore.currentEditItem[column.spName]});
+	                        return React.createElement(Checkbox_1.default, {key: index, style: Styles_EditItemForm_1.checkboxStyle, label: column.displayName, disabled: column.displayOnly, onCheck: updateFunction, checked: !!this.listDataStore.currentEditItem[column.spName], labelStyle: Styles_EditItemForm_1.labelStyle});
 	                    }
 	                    else if (column.type === 'datetime') {
-	                        return React.createElement(TextField_1.default, {key: index, fullWidth: true, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, onChange: updateFunction, disabled: column.displayOnly, value: this.listDataStore.currentEditItem[column.spName] || '', errorText: validationState[column.spName]});
+	                        return React.createElement(TextField_1.default, {key: index, fullWidth: true, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, onChange: updateFunction, disabled: column.displayOnly, value: this.listDataStore.currentEditItem[column.spName] || '', errorText: validationState[column.spName], floatingLabelStyle: Styles_EditItemForm_1.labelStyle});
 	                    }
 	                    else if (column.type === 'number') {
-	                        return React.createElement(TextField_1.default, {key: index, fullWidth: true, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, onChange: updateFunction, disabled: column.displayOnly, value: this.listDataStore.currentEditItem[column.spName] || '', errorText: validationState[column.spName]});
+	                        return React.createElement(TextField_1.default, {key: index, fullWidth: true, floatingLabelText: column.required ? `${column.displayName}*` : column.displayName, onChange: updateFunction, disabled: column.displayOnly, value: this.listDataStore.currentEditItem[column.spName] || '', errorText: validationState[column.spName], floatingLabelStyle: Styles_EditItemForm_1.labelStyle});
 	                    }
 	                }), 
 	                this.listDataStore.currentEditItemNextStage &&
@@ -59293,10 +59676,10 @@
 	                    React.createElement("div", {style: Styles_EditItemForm_1.formButtonStyle}, 
 	                        React.createElement(RaisedButton_1.default, {label: 'suspend item', backgroundColor: '#EEB3B3', onClick: this.listDataStore.openSuspensionDialogue, disabled: this.listDataStore.asyncPendingLockout})
 	                    ), 
-	                this.listDataStore.canCreateShippingLabel &&
-	                    React.createElement("div", {style: Styles_EditItemForm_1.formButtonStyle}, 
-	                        React.createElement(RaisedButton_1.default, {label: 'generate pickup ticket', onClick: this.listDataStore.createPickupTicket})
-	                    )), 
+	                this.listDataStore.currentView.additionalActions &&
+	                    this.listDataStore.currentView.additionalActions.map((action, index) => (React.createElement("div", {key: index, style: Styles_EditItemForm_1.formButtonStyle}, 
+	                        React.createElement(RaisedButton_1.default, {label: action.buttonLabel, backgroundColor: action.buttonColor, onClick: action.composeAction(this.listDataStore), disabled: this.listDataStore.asyncPendingLockout})
+	                    )))), 
 	            React.createElement(Dialog_1.default, {contentStyle: Styles_EditItemForm_1.suspensionDialogueStyle, open: this.listDataStore.isDisplaySuspensionDialogue, title: 'Confirm', modal: true}, 
 	                React.createElement("div", null, 'Are you sure you want to suspend the current item?'), 
 	                React.createElement(RaisedButton_1.default, {label: 'Yes', style: Styles_EditItemForm_1.formButtonStyle, onClick: this.listDataStore.suspendEditItem}), 
@@ -68397,6 +68780,9 @@
 	    maxWidth: '100%',
 	    maxHeight: '100% !important',
 	    height: '100% !important'
+	};
+	exports.labelStyle = {
+	    color: '#939496'
 	};
 
 

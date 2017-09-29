@@ -31,5 +31,5 @@ export const StageOrder: Array<StageName> = [
 export interface IPendingStageData {
     Stage: StageName,
     [movedToColumnName: string]: string,
-    LastStageBeforeSuspension?: string
+    Previous_x0020_Stage?: StageName
 }

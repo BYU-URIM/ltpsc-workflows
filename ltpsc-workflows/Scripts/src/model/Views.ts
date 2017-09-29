@@ -2,10 +2,23 @@ import { Column } from './Columns';
 import * as Cols from './Columns'
 import { getFormattedDate } from '../utils/general';
 import { StageName } from './Stages';
+import ListDataStore from '../stores/ListDataStore';
+import { generatePickupTicketPdf } from '../services/PdfService';
 
 export interface IView {
     stageName: StageName
     columns: Array<Column>
+    additionalActions?: Array<IItemAction>
+}
+
+// Item action contains data representing any button rendered to the form modal allowing a user to take action regarding the current item
+// Certain view actions are built into each form modal since they appear at almost every stage: Return to previous Stage, Submit to next stage, and suspend
+// Additional view actions are stored in each view object.
+// action is a higher order function that binds the store instance to an onClick event handler
+export interface IItemAction {
+    buttonLabel: string
+    buttonColor?: string
+    composeAction(store: ListDataStore): () => void
 }
 
 
@@ -42,7 +55,13 @@ export const ProcessingPlan: IView = {
         new Cols.Restrictions(),
         new Cols.AppraisalNote(),
         new Cols.StageComments_ProcessingPlan()
-    ]
+    ],
+    additionalActions: [{
+        buttonLabel: 'generate pickup ticket',
+        composeAction: function(store) {
+            return store.createPickupTicket
+        }
+    }]
 }
 
 export const ReviewProcessingPlan: IView = {
@@ -87,7 +106,7 @@ export const AssignProcessor: IView = {
     stageName: 'Assign Processor',
     columns: [
         new Cols.Title().makeRequired(),
-        new Cols.CallNumber(),
+        new Cols.CallNumber().makeDisplayOnly(),
         new Cols.CollectionType().makeRequired(),
         new Cols.CollectingArea().makeRequired(),
         new Cols.DescriptionOfProposedProcessing(),
@@ -148,7 +167,13 @@ export const EnterDescription: IView = {
         new Cols.VaultMaterialsIncluded(),
         new Cols.ListMaterialsToBePlacedIntoVault(),
         new Cols.StageComments_EnterDescription()
-    ]
+    ],
+    additionalActions: [{
+        buttonLabel: 'Return to Sender of Comments',
+        composeAction: function(store) {
+            return store.returnEditItemToPreviousStage
+        }
+    }]
 }
 
 export const ContentReview: IView = {
@@ -175,7 +200,13 @@ export const ContentReview: IView = {
         new Cols.SupervisorApproval(),
         new Cols.ArrangementAndDescriptionComments(),
         new Cols.StageComments_ContentReview()
-    ]
+    ],
+    additionalActions: [{
+        buttonLabel: 'Return to Processor - Enter Description',
+        composeAction: function(store) {
+            return store.returnEditItemToProcessor
+        }
+    }]
 }
 
 export const CollectionsManagementCollectionReview: IView = {
@@ -189,6 +220,8 @@ export const CollectionsManagementCollectionReview: IView = {
         new Cols.ExtentInLinearFt().makeDisplayOnly(),
         new Cols.ProcessingLevel().makeDisplayOnly(),
         new Cols.LocationOfMaterials().makeDisplayOnly(),
+        new Cols.CollectionManagementReviewDate(),
+        new Cols.CollectionManagementComments(),
         new Cols.ConditionReportRecommendations(),
         new Cols.ConditionRecommendationsComments(),
         new Cols.Deaccession(),
@@ -202,7 +235,13 @@ export const CollectionsManagementCollectionReview: IView = {
         new Cols.SupervisorApproval(),
         new Cols.ArrangementAndDescriptionComments(),
         new Cols.StageComments_CollectionsManagementCollectionReview()
-    ]
+    ],
+    additionalActions: [{
+        buttonLabel: 'Return to Processor - Enter Description',
+        composeAction: function(store) {
+            return store.returnEditItemToProcessor
+        }
+    }]
 }
 
 export const PickupFromProcessor: IView = {
@@ -243,8 +282,16 @@ export const DescriptionSpecialistCollectionReview: IView = {
         new Cols.SupervisorReviewDate().makeRequired(),
         new Cols.SupervisorApproval(),
         new Cols.ArrangementAndDescriptionComments(),
+        new Cols.DescriptionSpecialistReviewDate(),
+        new Cols.DescriptionSpecialistReviewComments(),
         new Cols.StageComments_DescriptionSpecialistCollectionReview()
-    ]
+    ],
+    additionalActions: [{
+        buttonLabel: 'Return to Processor - Enter Description',
+        composeAction: function(store) {
+            return store.returnEditItemToProcessor
+        }
+    }]
 }
 
 export const AuthorityWorkReview: IView = {
@@ -268,37 +315,16 @@ export const AuthorityWorkReview: IView = {
         new Cols.SupervisorReviewDate(),
         new Cols.SupervisorApproval().makeDisplayOnly(),
         new Cols.ArrangementAndDescriptionComments(),
-        new Cols.CollectionManagementReviewDate(),
-        new Cols.CollectionManagementComments(),
         new Cols.CatalogReviewDate(),
         new Cols.CatalogReviewComments(),
         new Cols.StageComments_AuthorityWorkReview()
-    ]
-}
-
-export const CatalogCollection: IView = {
-    stageName: 'Catalog Collection',
-    columns: [
-        new Cols.Title().makeDisplayOnly(),
-        new Cols.AccessionNumber().makeDisplayOnly(),
-        new Cols.CallNumber().makeDisplayOnly(),
-        new Cols.CollectingArea().makeDisplayOnly(),
-        new Cols.CatalogingDate().setDefaultValue(getFormattedDate()).makeRequired(),
-        new Cols.CatalogingDone().makeRequired(),
-        new Cols.StageComments_CatalogCollection()
-    ]
-}
-
-export const UploadingFindingAid: IView = {
-    stageName: 'Uploading Finding Aid',
-    columns: [
-        new Cols.Title().makeDisplayOnly(),
-        new Cols.AccessionNumber().makeDisplayOnly(),
-        new Cols.CallNumber().makeDisplayOnly(),
-        new Cols.UploadDate().setDefaultValue(getFormattedDate()).makeRequired(),
-        new Cols.FindingAidUploaded().makeRequired(),
-        new Cols.StageComments_UploadingFindingAid()
-    ]
+    ],
+    additionalActions: [{
+        buttonLabel: 'Return to Processor - Enter Description',
+        composeAction: function(store) {
+            return store.returnEditItemToProcessor
+        }
+    }]
 }
 
 export const FinalCuratorReview: IView = {
@@ -329,6 +355,31 @@ export const FinalCuratorReview: IView = {
     ]
 }
 
+export const CatalogCollection: IView = {
+    stageName: 'Catalog Collection',
+    columns: [
+        new Cols.Title().makeDisplayOnly(),
+        new Cols.AccessionNumber().makeDisplayOnly(),
+        new Cols.CallNumber().makeDisplayOnly(),
+        new Cols.CollectingArea().makeDisplayOnly(),
+        new Cols.CatalogingDate().setDefaultValue(getFormattedDate()).makeRequired(),
+        new Cols.CatalogingDone().makeRequired(),
+        new Cols.StageComments_CatalogCollection()
+    ]
+}
+
+export const UploadingFindingAid: IView = {
+    stageName: 'Uploading Finding Aid',
+    columns: [
+        new Cols.Title().makeDisplayOnly(),
+        new Cols.AccessionNumber().makeDisplayOnly(),
+        new Cols.CallNumber().makeDisplayOnly(),
+        new Cols.UploadDate().setDefaultValue(getFormattedDate()).makeRequired(),
+        new Cols.FindingAidUploaded().makeRequired(),
+        new Cols.StageComments_UploadingFindingAid()
+    ]
+}
+
 export const LabelingBarcodeAndLocationAssigned: IView = {
     stageName: 'Labeling Barcode And Locations Assigned',
     columns: [
@@ -351,8 +402,14 @@ export const Suspended: IView = {
         new Cols.Title().makeDisplayOnly(),
         new Cols.AccessionNumber().makeDisplayOnly(),
         new Cols.CallNumber().makeDisplayOnly(),
-        new Cols.LastStageBeforeSuspension().makeDisplayOnly()
-    ]
+        new Cols.PreviousStage().makeDisplayOnly()
+    ],
+    additionalActions: [{
+        buttonLabel: 'End Suspension - Return to Previous Stage',
+        composeAction: function(store) {
+            return store.returnEditItemToPreviousStage
+        }
+    }]
 }
 
 export const DEAFULT_VIEW: IView = {
