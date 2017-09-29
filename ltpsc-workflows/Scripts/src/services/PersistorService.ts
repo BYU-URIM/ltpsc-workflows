@@ -71,6 +71,18 @@ export async function createListItemPdf(listItem: ListItem) {
     return createInfo.d
 }
 
+// fetches the SP Group, then fetches the users from the group and then selects the email from each user
+// the subject and body params are used to send an email to each of the user emails
+export async function emailGroup(group: string, subject: string, body: string ) {
+    const rawSecurityInfo = await dao.fetchSecurityValidation()
+    const rawGroupData = await dao.fetchGroup(group)
+    const rawGroupUserData = await dao.genericGetByEndpoint(rawGroupData.d.Users.__deferred.uri)
+    const emailAddresses: string[] = rawGroupUserData.d.results.map(user => user.Email)
+
+    // TODO pass in emailAddresses instead of array w/ my email
+    await dao.sendEmail(['connor.moody@byu.edu'], subject, body, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
+}
+
 
 // private helper function to resolve the raw group data received from the server into a group array for the current user object
 function getUserGroupFromRawGroupInfo(rawGroupInfo): IGroup[] {

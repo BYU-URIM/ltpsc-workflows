@@ -7,6 +7,8 @@ export function getFormattedDate() {
 
 export const DATE_REGEX = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/
 
+// maps a stage name to a SharePoint column corresponding to the date when an item was moved to a certain stage
+// 'Moved to ___' cloumns must exist for each stage so that a single items course can be tracked over time
 export function getMovedToColumnNameFromStageName(stageName: StageName) {
     switch(stageName) {
         case 'Assign Processor':
@@ -62,6 +64,15 @@ export function getMovedToColumnNameFromStageName(stageName: StageName) {
 
         case 'Uploading Finding Aid':
             return 'Moved_x0020_to_x0020_Uploading_x'
+        
+        case 'Request Materials':
+            return 'Moved_x0020_to_x0020_Request_x00'
+
+        default:
+            throw new Error(
+                `Stage '${stageName}' is not being mapped to a 'Moved to ___' column. Either the Moved to ${stageName} column does not exist in SharePoint
+                or this function is not correctly mapping the stage name to the appropriate SharePoint column name.` 
+            )
 
     }
 }

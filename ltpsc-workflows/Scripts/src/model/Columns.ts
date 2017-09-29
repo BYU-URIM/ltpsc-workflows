@@ -229,6 +229,18 @@ export class DescriptionOfProposedDeaccession extends Column {
     type = 'textarea' as FieldType
 }
 
+export class DescriptionSpecialistReviewComments extends Column {
+    displayName = 'Description Specialist Review Comments'
+    spName = 'Description_x0020_Specialist_x000'
+    type = 'textarea' as FieldType
+}
+
+export class DescriptionSpecialistReviewDate extends Column {
+    displayName ='Description Specialist Review Date'
+    spName = 'Description_x0020_Specialist_x00'
+    type = 'text' as FieldType
+}
+
 export class ExpectedDeliveryDate extends Column {
     displayName = 'Expected Delivery Date'
     spName = 'Expected_x0020_Delivery_x0020_Da'
@@ -449,9 +461,9 @@ export class CollectionLocationAssignmentDate extends Column {
     type = 'datetime' as FieldType
 }
 
-export class LastStageBeforeSuspension extends Column {
-    displayName = 'Last Stage Before Suspension'
-    spName = 'LastStageBeforeSuspension'
+export class PreviousStage extends Column {
+    displayName = 'Previous Stage'
+    spName = 'Previous_x0020_Stage'
     type = 'text' as FieldType
 }
 

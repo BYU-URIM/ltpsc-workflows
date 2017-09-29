@@ -16,10 +16,12 @@ import {
     suspensionFormButtonStyle, 
     suspensionDialogueStyle, 
     submitFormButtonStyle,
-    formModalStyle
+    formModalStyle,
+    labelStyle
  } from './Styles_EditItemForm';
 import RaisedButton from 'material-ui/RaisedButton';
 import { EditFormStatusEnum } from '../../model/EditFormStatusEnum';
+import { action } from 'mobx';
 
 
 @observer
@@ -42,9 +44,9 @@ export class EditItemForm extends React.Component<any, any> {
                 autoScrollBodyContent={true} actions={actions} modal={true} open={this.listDataStore.isDisplayEditItemForm} contentStyle={formModalStyle} >
                 <div style={inputFieldStyles}>
                 {   /* return to previous stage button */
-                    this.listDataStore.currentEditItemPreviousstage &&
-                    (<RaisedButton style={formButtonStyle} label={`return to previous stage - ${this.listDataStore.currentEditItemPreviousstage}`} 
-                        onClick={this.listDataStore.returnEditItemToPreviousStage} disabled={this.listDataStore.asyncPendingLockout} /> )
+                    this.listDataStore.currentEditItemInOrderPreviousStage &&
+                    (<RaisedButton style={formButtonStyle} label={`return to previous stage - ${this.listDataStore.currentEditItemInOrderPreviousStage}`} 
+                        onClick={this.listDataStore.returnEditItemToInOrderPreviousStage} disabled={this.listDataStore.asyncPendingLockout} /> )
                 }
                 {
                     this.listDataStore.currentView.columns.map((column, index) => {
@@ -53,14 +55,14 @@ export class EditItemForm extends React.Component<any, any> {
 
                         // render the appropriate form control
                         if(column.type === 'text') {
-                            return <TextField value={this.listDataStore.currentEditItem[column.spName] || ''} key={index} fullWidth={true} disabled={column.displayOnly} 
+                            return <TextField value={this.listDataStore.currentEditItem[column.spName] || ''} key={index} fullWidth={true} disabled={column.displayOnly} floatingLabelStyle={labelStyle}
                                         floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } onChange={updateFunction} errorText={validationState[column.spName]} />
                         } else if(column.type === 'textarea') {
                             return <TextField key={index} fullWidth={true} multiLine={true} floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } disabled={column.displayOnly}
-                                        onChange={updateFunction} value={this.listDataStore.currentEditItem[column.spName] || ''} errorText={validationState[column.spName]} />
+                                        onChange={updateFunction} value={this.listDataStore.currentEditItem[column.spName] || ''} errorText={validationState[column.spName]} floatingLabelStyle={labelStyle} />
                         } else if(column.type === 'choice') {
                             return (
-                                <SelectField value={this.listDataStore.currentEditItem[column.spName] || ''} key={index} fullWidth={true} disabled={column.displayOnly} 
+                                <SelectField value={this.listDataStore.currentEditItem[column.spName] || ''} key={index} fullWidth={true} disabled={column.displayOnly} floatingLabelStyle={labelStyle} 
                                     onChange={(e, key, payload) => updateFunction(e, payload)} floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } >
                                 {
                                     column.metadata.choices.map((choice, index) => (
@@ -71,7 +73,7 @@ export class EditItemForm extends React.Component<any, any> {
                             )
                         } else if(column.type === 'lookup') {
                             return (
-                                <SelectField value={this.listDataStore.currentEditItem[column.spName]} key={index} fullWidth={true} 
+                                <SelectField value={this.listDataStore.currentEditItem[column.spName]} key={index} fullWidth={true} floatingLabelStyle={labelStyle}
                                     disabled={column.displayOnly} onChange={(e, key, payload) => updateFunction(e, payload)} floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } >
                                 {
                                     Object.keys(this.listDataStore.lookupValues.get(column.spName)).map((lookupId, index) => (
@@ -82,13 +84,13 @@ export class EditItemForm extends React.Component<any, any> {
                             )
                         } else if(column.type === 'checkbox') {
                             return <Checkbox key={index} style={checkboxStyle} label={column.displayName} disabled={column.displayOnly}
-                                        onCheck={updateFunction} checked={!!this.listDataStore.currentEditItem[column.spName]} />
+                                        onCheck={updateFunction} checked={!!this.listDataStore.currentEditItem[column.spName]} labelStyle={labelStyle} />
                         } else if(column.type === 'datetime') {
                             return <TextField key={index} fullWidth={true} floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } onChange={updateFunction}
-                                        disabled={column.displayOnly} value={this.listDataStore.currentEditItem[column.spName] || ''} errorText={validationState[column.spName]} />
+                                        disabled={column.displayOnly} value={this.listDataStore.currentEditItem[column.spName] || ''} errorText={validationState[column.spName]} floatingLabelStyle={labelStyle} />
                         } else if(column.type === 'number') {
                             return <TextField key={index} fullWidth={true} floatingLabelText={column.required ? `${column.displayName}*` : column.displayName } onChange={updateFunction}
-                                        disabled={column.displayOnly} value={this.listDataStore.currentEditItem[column.spName] || ''} errorText={validationState[column.spName]} />
+                                        disabled={column.displayOnly} value={this.listDataStore.currentEditItem[column.spName] || ''} errorText={validationState[column.spName]} floatingLabelStyle={labelStyle} />
                         }
                     })
                 }
@@ -101,10 +103,11 @@ export class EditItemForm extends React.Component<any, any> {
                     this.listDataStore.canSuspendCurrentEditItem &&
                     <div style={formButtonStyle}><RaisedButton label={'suspend item'} backgroundColor='#EEB3B3' onClick={this.listDataStore.openSuspensionDialogue} disabled={this.listDataStore.asyncPendingLockout} /></div>
                 }
-                {
-                    /* submit to shipping next stage button */
-                    this.listDataStore.canCreateShippingLabel &&
-                    <div style={formButtonStyle}><RaisedButton label={'generate pickup ticket'} onClick={this.listDataStore.createPickupTicket} /></div>
+                {  /* render any additional view actions */
+                    this.listDataStore.currentView.additionalActions &&
+                    this.listDataStore.currentView.additionalActions.map((action, index) => (
+                        <div key={index} style={formButtonStyle}><RaisedButton label={action.buttonLabel} backgroundColor={action.buttonColor} onClick={action.composeAction(this.listDataStore)} disabled={this.listDataStore.asyncPendingLockout} /></div>
+                    ))
                 }
                 </div>
 

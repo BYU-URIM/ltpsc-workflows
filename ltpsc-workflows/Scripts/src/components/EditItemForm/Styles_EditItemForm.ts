@@ -36,3 +36,7 @@ export const formModalStyle = {
     maxHeight: '100% !important',
     height: '100% !important'
 }
+
+export const labelStyle = {
+    color: '#939496'
+}

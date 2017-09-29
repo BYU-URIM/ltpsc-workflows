@@ -11,8 +11,10 @@ import { DATE_REGEX, getMovedToColumnNameFromStageName, getFormattedDate } from 
 import { ListItem, DEFAULT_LIST_ITEM } from '../model/ListItem';
 import { StageName, StageOrder, IPendingStageData } from '../model/Stages';
 import { EditFormStatusEnum } from '../model/EditFormStatusEnum';
-import { ILookupOptionDictionary } from '../model/Columns';
+import { ILookupOptionDictionary, PreviousStage } from '../model/Columns';
 import * as PdfService from '../services/PdfService'
+import * as Groups from '../model/Groups'
+import IGroup from '../model/Groups';
 
 
 @autobind
@@ -107,13 +109,14 @@ export default class ListDataStore {
         // list item save process
         const pendingStageData: IPendingStageData = {
             Stage: this.currentEditItemNextStage, 
-            [getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: getFormattedDate()
+            [getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: getFormattedDate(),
+            Previous_x0020_Stage: this.currentEditItem.Stage as StageName
         }
         // await the list item save and store the JSON returned from the server if successfull or null if there was an error
         const listItemSaveInfo = await this.saveEditItemForm(pendingStageData)
 
 
-        // pdf save process
+        // pdf save process (only applicable for forms entering the 'complete' stage)
         let pdfSaveError = false
         // if the save was successfull and the next stage is complete, attempt to archive the PDF of the item
         if(listItemSaveInfo && pendingStageData.Stage === StageOrder[StageOrder.length - 1]) {
@@ -131,8 +134,34 @@ export default class ListDataStore {
             }
         }
 
+
+        // email save process as long as item is not complete (not critical - save process moves forward even if this fails)
+        if(listItemSaveInfo && !pdfSaveError && pendingStageData.Stage !== StageOrder[StageOrder.length - 1]) {
+           this.emailReceivingGroup(pendingStageData)
+        }
+
+        // if all critical async operations have been successfull, clean up process with onSuccessfullSave
+        // NOTE saving the list item and saving the PDF are critical, emailing users is non critical
         if(listItemSaveInfo && !pdfSaveError) {
             this.onSuccessfullSave(listItemSaveInfo, pendingStageData)
+        }
+    }
+
+    @action async returnEditItemToInOrderPreviousStage() {
+        if(!this.canSubmitCurrentItemToSameOrLowerStage) {
+            this.raiseFormError()
+            return
+        }
+
+        const pendingStageData: IPendingStageData = {
+            Stage: this.currentEditItemInOrderPreviousStage, 
+            [getMovedToColumnNameFromStageName(this.currentEditItemInOrderPreviousStage)]: getFormattedDate(),
+            Previous_x0020_Stage: this.currentEditItem.Stage as StageName
+        }
+        const saveInfo = await this.saveEditItemForm(pendingStageData)
+        if(saveInfo) {
+            this.emailReceivingGroup(pendingStageData)
+            this.onSuccessfullSave(saveInfo, pendingStageData)
         }
     }
 
@@ -143,11 +172,31 @@ export default class ListDataStore {
         }
 
         const pendingStageData: IPendingStageData = {
-            Stage: this.currentEditItemPreviousstage, 
-            [getMovedToColumnNameFromStageName(this.currentEditItemPreviousstage)]: getFormattedDate()
+            Stage: this.currentEditItemPreviousStage, 
+            [getMovedToColumnNameFromStageName(this.currentEditItemPreviousStage)]: getFormattedDate(),
+            Previous_x0020_Stage: this.currentEditItem.Stage as StageName
         }
         const saveInfo = await this.saveEditItemForm(pendingStageData)
         if(saveInfo) {
+            this.emailReceivingGroup(pendingStageData)
+            this.onSuccessfullSave(saveInfo, pendingStageData)
+        }
+    }
+
+    @action async returnEditItemToProcessor() {
+        if(!this.canSubmitCurrentItemToSameOrLowerStage) {
+            this.raiseFormError()
+            return
+        }
+
+        const pendingStageData: IPendingStageData = {
+            Stage: StageOrder[7],/* Enter Description Stage */ 
+            [getMovedToColumnNameFromStageName(StageOrder[7])]: getFormattedDate(),
+            Previous_x0020_Stage: this.currentEditItem.Stage as StageName
+        }
+        const saveInfo = await this.saveEditItemForm(pendingStageData)
+        if(saveInfo) {
+            this.emailReceivingGroup(pendingStageData)
             this.onSuccessfullSave(saveInfo, pendingStageData)
         }
     }
@@ -163,7 +212,7 @@ export default class ListDataStore {
         const pendingStageData: IPendingStageData = { 
             Stage: 'Suspended', 
             [getMovedToColumnNameFromStageName('Suspended')]: getFormattedDate(),
-            LastStageBeforeSuspension: this.currentEditItem.Stage
+            Previous_x0020_Stage: this.currentEditItem.Stage as StageName
         }
         const saveInfo = await this.saveEditItemForm(pendingStageData)
         if(saveInfo) {
@@ -262,12 +311,19 @@ export default class ListDataStore {
         }
     }
 
-    @computed get currentEditItemPreviousstage(): StageName {
+    // returns the stage of this item from the last time it was saved - will be different than the in order
+    // previous stage if this item was ever suspended, returned to processor, or underwent any other non sequential stage move
+    @computed get currentEditItemPreviousStage(): StageName {
+        return this.currentEditItem.Previous_x0020_Stage as StageName || StageOrder[0]
+    }
+
+    // returns the stage that precedes the current stage in the stage order
+    @computed get currentEditItemInOrderPreviousStage(): StageName {
         if(this.currentView.stageName !== 'Suspended') {
             const stageIndex = StageOrder.indexOf(this.currentEditItem.Stage as StageName)
             return stageIndex !== 0 ? StageOrder[stageIndex - 1] : null
         } else {
-            return this.currentEditItem.LastStageBeforeSuspension as StageName || StageOrder[0]
+            return null
         }
     }
 
@@ -291,10 +347,6 @@ export default class ListDataStore {
 
     @computed get canSuspendCurrentEditItem() {
         return this.isCurrentUserAdmin && this.editFormDisplayStatus === EditFormStatusEnum.DISPLAYING_EXISTING && this.currentView.stageName !== 'Suspended'
-    }
-
-    @computed get canCreateShippingLabel() {
-        return this.currentEditItem.Stage === 'Pickup from Processor'
     }
 
     // private helpers
@@ -350,5 +402,26 @@ export default class ListDataStore {
          // close down the modal
         this.currentEditItem = DEFAULT_LIST_ITEM
         this.editFormDisplayStatus = EditFormStatusEnum.CLOSED
+    }
+
+    // when changing a form's stage, this function emails the group receiving the form about a new pending item in their queue
+    // the new stage data, passed in as pendingStageData contians the new stage which is used to find the corresponding group
+    @ action private async emailReceivingGroup(pendingStageData: IPendingStageData) {
+            // email save process all saving is successfull up to this point
+            // search through each view list of each group to find which group the item is being sent to
+            const receivingGroupObjectName = Object.keys(Groups).find(groupName => Groups[groupName].permittedViews.find((view: IView) => view.stageName === pendingStageData.Stage))
+            const groupName = Groups[receivingGroupObjectName].name
+            try {
+                runInAction(() => this.asyncPendingLockout = true)
+                await PersistorService.emailGroup(
+                    groupName,
+                    'Pending LTPSC Item',
+                    `The ${groupName} group has a pending LTPSC item due for processing.`
+                )
+            } catch(error) {
+                this.raiseError(`save was successful, however, an error occurred while emailing group members`, error)
+            } finally {
+                runInAction(() => this.asyncPendingLockout = false)
+            }
     }
 }
