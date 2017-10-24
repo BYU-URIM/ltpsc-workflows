@@ -1,6 +1,6 @@
 export type StageName = 'Enter Aquisition Information' | 'Processing Plan' | 'Review Processing Plan' | 'Retrieve Collection From Curator' | 'Request Materials' |
                         'Assign Processor' | 'Deliver Collection' | 'Enter Description' | 'Content Review' | 'Collections Management Collection Review' |
-                        'Pickup from Processor' | 'Description Specialist Collection Review' | 'Authority Work Review' | 'Catalog Collection' |
+                        'Pickup from Processor' | 'Description Specialist Collection Review' | 'Authority Work Review' | 'Catalog Collection' | 'Review of Accession Record' |
                         'Uploading Finding Aid' | 'Final Curator Review' | 'Labeling Barcode And Locations Assigned' | 'Default' | 'Complete' | 'Suspended'
 
 
@@ -9,6 +9,7 @@ export const StageOrder: Array<StageName> = [
     'Enter Aquisition Information',
     'Processing Plan',
     'Review Processing Plan',
+    'Review of Accession Record',
     'Retrieve Collection From Curator',
     'Assign Processor',
     'Request Materials',

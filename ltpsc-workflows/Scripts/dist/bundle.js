@@ -36767,6 +36767,24 @@
 	            }
 	        });
 	    }
+	    returnEditItemToCurator() {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            if (!this.canSubmitCurrentItemToSameOrLowerStage) {
+	                this.raiseFormError();
+	                return;
+	            }
+	            const pendingStageData = {
+	                Stage: Stages_1.StageOrder[0],
+	                [general_1.getMovedToColumnNameFromStageName(Stages_1.StageOrder[0])]: general_1.getFormattedDate(),
+	                Previous_x0020_Stage: this.currentEditItem.Stage
+	            };
+	            const saveInfo = yield this.saveEditItemForm(pendingStageData);
+	            if (saveInfo) {
+	                this.emailReceivingGroup(pendingStageData);
+	                this.onSuccessfullSave(saveInfo, pendingStageData);
+	            }
+	        });
+	    }
 	    suspendEditItem() {
 	        return __awaiter(this, void 0, void 0, function* () {
 	            if (!this.canSubmitCurrentItemToSameOrLowerStage) {
@@ -37056,6 +37074,12 @@
 	    __metadata('design:paramtypes', []), 
 	    __metadata('design:returntype', Promise)
 	], ListDataStore.prototype, "returnEditItemToProcessor", null);
+	__decorate([
+	    mobx_1.action, 
+	    __metadata('design:type', Function), 
+	    __metadata('design:paramtypes', []), 
+	    __metadata('design:returntype', Promise)
+	], ListDataStore.prototype, "returnEditItemToCurator", null);
 	__decorate([
 	    mobx_1.action, 
 	    __metadata('design:type', Function), 
@@ -40205,6 +40229,23 @@
 	        new Cols.StageComments_LabelingBarcodeAndLocationsAssigned()
 	    ]
 	};
+	exports.ReviewOfAccessionRecord = {
+	    stageName: 'Review of Accession Record',
+	    columns: [
+	        new Cols.Title().makeDisplayOnly(),
+	        new Cols.CallNumber().makeDisplayOnly(),
+	        new Cols.AccessionNumber().makeDisplayOnly(),
+	        new Cols.DateOfAccessionReview(),
+	        new Cols.ApproveAccessionRecord(),
+	        new Cols.StageComments_ReviewAccessionRecord()
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'Return to Curator - Enter Acquisition Information',
+	            composeAction: function (store) {
+	                return store.returnEditItemToCurator;
+	            }
+	        }]
+	};
 	exports.Suspended = {
 	    stageName: 'Suspended',
 	    columns: [
@@ -40264,6 +40305,15 @@
 	    }
 	}
 	exports.AppraisalNote = AppraisalNote;
+	class ApproveAccessionRecord extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Approve Accession Record';
+	        this.spName = 'Approve_x0020_Accession_x0020_Re';
+	        this.type = 'checkbox';
+	    }
+	}
+	exports.ApproveAccessionRecord = ApproveAccessionRecord;
 	class ApproveProcessingPlan extends Column {
 	    constructor() {
 	        super(...arguments);
@@ -40492,6 +40542,15 @@
 	    }
 	}
 	exports.DateDelivered = DateDelivered;
+	class DateOfAccessionReview extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Date of Accession Review';
+	        this.spName = 'Date_x0020_of_x0020_Accession_x0';
+	        this.type = 'datetime';
+	    }
+	}
+	exports.DateOfAccessionReview = DateOfAccessionReview;
 	class Deaccession extends Column {
 	    constructor() {
 	        super(...arguments);
@@ -41017,6 +41076,15 @@
 	    }
 	}
 	exports.StageComments_RetrieveCollectionFromCurator = StageComments_RetrieveCollectionFromCurator;
+	class StageComments_ReviewAccessionRecord extends Column {
+	    constructor() {
+	        super(...arguments);
+	        this.displayName = 'Stage Comments - Review Accession Record';
+	        this.spName = 'Stage_x0020_Comments_x0020__x00216';
+	        this.type = 'textarea';
+	    }
+	}
+	exports.StageComments_ReviewAccessionRecord = StageComments_ReviewAccessionRecord;
 	class StageComments_ReviewProcessingPlan extends Column {
 	    constructor() {
 	        super(...arguments);
@@ -41088,6 +41156,8 @@
 	            return 'Moved_x0020_to_x0020_Uploading_x';
 	        case 'Request Materials':
 	            return 'Moved_x0020_to_x0020_Request_x00';
+	        case 'Review of Accession Record':
+	            return 'Moved_x0020_to_x0020_Review_x0020';
 	        default:
 	            throw new Error(`Stage '${stageName}' is not being mapped to a 'Moved to ___' column. Either the Moved to ${stageName} column does not exist in SharePoint
 	                or this function is not correctly mapping the stage name to the appropriate SharePoint column name.`);
@@ -51630,6 +51700,12 @@
 	        Views.PickupFromProcessor, Views.LabelingBarcodeAndLocationAssigned
 	    ]
 	};
+	exports.CollectionsManagementSpecialist = {
+	    name: 'Collections Management Specialist',
+	    permittedViews: [
+	        Views.ReviewOfAccessionRecord
+	    ]
+	};
 	exports.Processor = {
 	    name: 'Processor',
 	    permittedViews: [Views.RequestMaterials, Views.EnterDescription]
@@ -51717,6 +51793,10 @@
 	    mobx_1.observable, 
 	    __metadata('design:type', Boolean)
 	], ListItem.prototype, "Approve_x0020_Request", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', Boolean)
+	], ListItem.prototype, "Approve_x0020_Accession_x0020_Re", void 0);
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
@@ -51809,6 +51889,10 @@
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
 	], ListItem.prototype, "Date_x0020_Delivered", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Date_x0020_of_x0020_Accession_x0", void 0);
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', Boolean)
@@ -52052,6 +52136,10 @@
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
+	], ListItem.prototype, "Moved_x0020_to_x0020_Review_x0020", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
 	], ListItem.prototype, "Previous_x0020_Stage", void 0);
 	__decorate([
 	    mobx_1.observable, 
@@ -52121,6 +52209,10 @@
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
 	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00213", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00216", void 0);
 	exports.ListItem = ListItem;
 	exports.DEFAULT_LIST_ITEM = new ListItem();
 
@@ -52134,6 +52226,7 @@
 	    'Enter Aquisition Information',
 	    'Processing Plan',
 	    'Review Processing Plan',
+	    'Review of Accession Record',
 	    'Retrieve Collection From Curator',
 	    'Assign Processor',
 	    'Request Materials',

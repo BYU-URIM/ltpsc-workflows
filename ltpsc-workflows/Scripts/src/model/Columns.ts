@@ -52,6 +52,12 @@ export class AppraisalNote extends Column {
     type = 'textarea' as FieldType
 }
 
+export class ApproveAccessionRecord extends Column {
+    displayName = 'Approve Accession Record'
+    spName = 'Approve_x0020_Accession_x0020_Re'
+    type = 'checkbox' as FieldType
+}
+
 export class ApproveProcessingPlan extends Column {
     displayName = 'Approve Processing Plan'
     spName = 'Approve_x0020_Processing_x0020_P'
@@ -202,6 +208,12 @@ export class CurrentArragnement extends Column {
 export class DateDelivered extends Column {
     displayName = 'Date Delivered'
     spName = 'Date_x0020_Delivered'
+    type = 'datetime' as FieldType
+}
+
+export class DateOfAccessionReview extends Column {
+    displayName = 'Date of Accession Review'
+    spName = 'Date_x0020_of_x0020_Accession_x0'
     type = 'datetime' as FieldType
 }
 
@@ -554,6 +566,12 @@ export class StageComments_RequestMaterials extends Column {
 export class StageComments_RetrieveCollectionFromCurator extends Column {
     displayName = 'Stage Comments'
     spName = 'Stage_x0020_Comments_x0020__x0022'
+    type = 'textarea' as FieldType
+}
+
+export class StageComments_ReviewAccessionRecord extends Column {
+    displayName = 'Stage Comments - Review Accession Record'
+    spName = 'Stage_x0020_Comments_x0020__x00216'
     type = 'textarea' as FieldType
 }
 

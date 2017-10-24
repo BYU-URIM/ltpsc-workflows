@@ -67,6 +67,9 @@ export function getMovedToColumnNameFromStageName(stageName: StageName) {
         
         case 'Request Materials':
             return 'Moved_x0020_to_x0020_Request_x00'
+        
+        case 'Review of Accession Record':
+            return 'Moved_x0020_to_x0020_Review_x0020'
 
         default:
             throw new Error(
