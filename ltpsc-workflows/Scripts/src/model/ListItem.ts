@@ -8,6 +8,7 @@ export class ListItem {
     @observable Appraisal_x0020_Note: string
     @observable Approve_x0020_Processing_x0020_P: boolean
     @observable Approve_x0020_Request: boolean
+    @observable Approve_x0020_Accession_x0020_Re: boolean
     @observable Arrangement_x0020_and_x0020_Desc: string
     @observable Arrangement_x0020_and_x0020_Desc0: string
     @observable Assigned_x0020_for_x0020_Process: boolean
@@ -31,6 +32,7 @@ export class ListItem {
     @observable Condition_x0020_Report_x0020__x0: string
     @observable Current_x0020_Arrangement: string
     @observable Date_x0020_Delivered: string
+    @observable Date_x0020_of_x0020_Accession_x0: string
     @observable Deaccession_x003F_: boolean
     @observable Delivery_x0020_Location: string
     @observable Delivery_x0020_Status: boolean
@@ -91,6 +93,7 @@ export class ListItem {
     @observable Moved_x0020_to_x0020_Review_x002: string
     @observable Moved_x0020_to_x0020_Suspended: string
     @observable Moved_x0020_to_x0020_Uploading_x: string
+    @observable Moved_x0020_to_x0020_Review_x0020: string
     @observable Previous_x0020_Stage: string
     @observable Stage_x0020_Comments_x0020__x0023: string // StageComments_AssignProcessor
     @observable Stage_x0020_Comments_x0020__x00211: string // StageComments_AuthorityWorkReview
@@ -109,6 +112,7 @@ export class ListItem {
     @observable Stage_x0020_Comments_x0020__x0022: string // StageComments_RetrieveCollectionFromCurator
     @observable Stage_x0020_Comments_x0020__x0021: string // StageComments_ReviewProcessingPlan
     @observable Stage_x0020_Comments_x0020__x00213: string // StageComments_UploadingFindingAid
+    @observable Stage_x0020_Comments_x0020__x00216: string // StageComments_ReviewAccessionRecords
 }
 
 export const DEFAULT_LIST_ITEM = new ListItem()

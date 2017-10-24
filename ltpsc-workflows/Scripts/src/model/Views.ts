@@ -396,6 +396,24 @@ export const LabelingBarcodeAndLocationAssigned: IView = {
     ]
 }
 
+export const ReviewOfAccessionRecord: IView = {
+    stageName: 'Review of Accession Record',
+    columns: [
+        new Cols.Title().makeDisplayOnly(),
+        new Cols.CallNumber().makeDisplayOnly(),
+        new Cols.AccessionNumber().makeDisplayOnly(),
+        new Cols.DateOfAccessionReview(),
+        new Cols.ApproveAccessionRecord(),
+        new Cols.StageComments_ReviewAccessionRecord()
+    ],
+    additionalActions: [{
+        buttonLabel: 'Return to Curator - Enter Acquisition Information',
+        composeAction: function(store) {
+            return store.returnEditItemToCurator
+        }
+    }]
+}
+
 export const Suspended: IView = {
     stageName: 'Suspended',
     columns: [

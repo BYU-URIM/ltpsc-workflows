@@ -10,7 +10,7 @@ export default IGroup
 export const Curator: IGroup = {
     name: 'Curator',
     permittedViews: [ Views.EnterAquisitionInformation, Views.ProcessingPlan, Views.ContentReview, Views.FinalCuratorReview ]
-} 
+}
 
 export const CPUSupervisor: IGroup = {
     name: 'CPU Supervisor',
@@ -22,6 +22,13 @@ export const CollectionsManagement: IGroup = {
     permittedViews: [ 
         Views.RetrieveCollectionFromCurator, Views.DeliverCollection, Views.CollectionsManagementCollectionReview,
         Views.PickupFromProcessor, Views.LabelingBarcodeAndLocationAssigned
+    ]
+}
+
+export const CollectionsManagementSpecialist: IGroup = {
+    name: 'Collections Management Specialist',
+    permittedViews: [
+        Views.ReviewOfAccessionRecord
     ]
 }
 

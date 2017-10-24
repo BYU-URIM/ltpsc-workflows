@@ -201,6 +201,24 @@ export default class ListDataStore {
         }
     }
 
+    @action async returnEditItemToCurator() {
+        if(!this.canSubmitCurrentItemToSameOrLowerStage) {
+            this.raiseFormError()
+            return
+        }
+
+        const pendingStageData: IPendingStageData = {
+            Stage: StageOrder[0],/* Enter Acquisition Information Stage */ 
+            [getMovedToColumnNameFromStageName(StageOrder[0])]: getFormattedDate(),
+            Previous_x0020_Stage: this.currentEditItem.Stage as StageName
+        }
+        const saveInfo = await this.saveEditItemForm(pendingStageData)
+        if(saveInfo) {
+            this.emailReceivingGroup(pendingStageData)
+            this.onSuccessfullSave(saveInfo, pendingStageData)
+        }
+    }
+
     @action async suspendEditItem() {
         if(!this.canSubmitCurrentItemToSameOrLowerStage) {
             this.raiseFormError()
