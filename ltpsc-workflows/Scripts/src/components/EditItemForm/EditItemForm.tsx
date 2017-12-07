@@ -104,10 +104,20 @@ export class EditItemForm extends React.Component<any, any> {
                     <div style={formButtonStyle}><RaisedButton label={'suspend item'} backgroundColor='#EEB3B3' onClick={this.listDataStore.openSuspensionDialogue} disabled={this.listDataStore.asyncPendingLockout} /></div>
                 }
                 {  /* render any additional view actions */
-                    this.listDataStore.currentView.additionalActions &&
-                    this.listDataStore.currentView.additionalActions.map((action, index) => (
-                        <div key={index} style={formButtonStyle}><RaisedButton label={action.buttonLabel} backgroundColor={action.buttonColor} onClick={action.composeAction(this.listDataStore)} disabled={this.listDataStore.asyncPendingLockout} /></div>
-                    ))
+                    (function() {
+                        if(this.listDataStore.currentView.additionalActions) {
+                            return this.listDataStore.currentView.additionalActions.map((action, index) => {
+                                // if the action does not have an isHidden() function, or if it does have an isHidden() function and it returns false, render the component
+                                if(!action.isHidden || (action.isHidden && !action.isHidden(this.listDataStore))) {
+                                    return (
+                                        <div key={index} style={formButtonStyle}>
+                                            <RaisedButton label={action.buttonLabel} backgroundColor={action.buttonColor} onClick={action.composeAction(this.listDataStore)} disabled={this.listDataStore.asyncPendingLockout} />
+                                        </div>
+                                    )
+                                }
+                            })
+                        }
+                    }).call(this)
                 }
                 </div>
 

@@ -190,8 +190,8 @@ export default class ListDataStore {
         }
 
         const pendingStageData: IPendingStageData = {
-            Stage: StageOrder[7],/* Enter Description Stage */ 
-            [getMovedToColumnNameFromStageName(StageOrder[7])]: getFormattedDate(),
+            Stage: 'Enter Description' as StageName,
+            [getMovedToColumnNameFromStageName('Enter Description')]: getFormattedDate(),
             Previous_x0020_Stage: this.currentEditItem.Stage as StageName
         }
         const saveInfo = await this.saveEditItemForm(pendingStageData)

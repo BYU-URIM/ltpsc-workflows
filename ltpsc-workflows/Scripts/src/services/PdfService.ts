@@ -149,7 +149,7 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         {table: {
             'Delivery Status': listItem.Delivery_x0020_Status,
             'Delivery Explanation': listItem.Deliver_x0020_Explanation,
-            'Date Delivered': listItem.Deliver_x0020_Explanation
+            'Date Delivered': listItem.Date_x0020_Delivered
         }},
         {table: {
             'Stage Comments - Deliver Collection': listItem.Stage_x0020_Comments_x0020__x0025

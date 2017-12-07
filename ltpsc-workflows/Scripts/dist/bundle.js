@@ -34477,7 +34477,7 @@
 	const EditItemForm_1 = __webpack_require__(484);
 	const RaisedButton_1 = __webpack_require__(531);
 	const Styles_AppContainer_1 = __webpack_require__(533);
-	const Stages_1 = __webpack_require__(425);
+	const Stages_1 = __webpack_require__(418);
 	const FlatButton_1 = __webpack_require__(490);
 	const Badge_1 = __webpack_require__(534);
 	const Styles_AppContainer_2 = __webpack_require__(533);
@@ -36596,16 +36596,16 @@
 	const inversify_1 = __webpack_require__(355);
 	const core_decorators_1 = __webpack_require__(396);
 	const Views_1 = __webpack_require__(415);
-	const Users_1 = __webpack_require__(418);
-	const PersistorService = __webpack_require__(419);
-	const Users_2 = __webpack_require__(418);
+	const Users_1 = __webpack_require__(419);
+	const PersistorService = __webpack_require__(420);
+	const Users_2 = __webpack_require__(419);
 	const Views_2 = __webpack_require__(415);
 	const general_1 = __webpack_require__(417);
-	const ListItem_1 = __webpack_require__(424);
-	const Stages_1 = __webpack_require__(425);
+	const ListItem_1 = __webpack_require__(425);
+	const Stages_1 = __webpack_require__(418);
 	const EditFormStatusEnum_1 = __webpack_require__(427);
 	const PdfService = __webpack_require__(426);
-	const Groups = __webpack_require__(422);
+	const Groups = __webpack_require__(423);
 	let ListDataStore = class ListDataStore {
 	    constructor() {
 	        this.currentView = Views_2.DEAFULT_VIEW;
@@ -36756,8 +36756,8 @@
 	                return;
 	            }
 	            const pendingStageData = {
-	                Stage: Stages_1.StageOrder[7],
-	                [general_1.getMovedToColumnNameFromStageName(Stages_1.StageOrder[7])]: general_1.getFormattedDate(),
+	                Stage: 'Enter Description',
+	                [general_1.getMovedToColumnNameFromStageName('Enter Description')]: general_1.getFormattedDate(),
 	                Previous_x0020_Stage: this.currentEditItem.Stage
 	            };
 	            const saveInfo = yield this.saveEditItemForm(pendingStageData);
@@ -39873,6 +39873,7 @@
 	"use strict";
 	const Cols = __webpack_require__(416);
 	const general_1 = __webpack_require__(417);
+	const Stages_1 = __webpack_require__(418);
 	exports.EnterAquisitionInformation = {
 	    stageName: 'Enter Aquisition Information',
 	    columns: [
@@ -39884,7 +39885,16 @@
 	        new Cols.CollectingArea().makeRequired(),
 	        new Cols.SubmittingCurator().makeRequired(),
 	        new Cols.StageComments_EnterAcquisitionInformation()
-	    ]
+	    ],
+	    additionalActions: [{
+	            buttonLabel: 'Return to Accession Record Review',
+	            composeAction: function (store) {
+	                return store.returnEditItemToPreviousStage;
+	            },
+	            isHidden(store) {
+	                return store.currentEditItemPreviousStage != 'Review of Accession Record';
+	            }
+	        }]
 	};
 	exports.ProcessingPlan = {
 	    stageName: 'Processing Plan',
@@ -40015,6 +40025,9 @@
 	            buttonLabel: 'Return to Sender of Comments',
 	            composeAction: function (store) {
 	                return store.returnEditItemToPreviousStage;
+	            },
+	            isHidden(store) {
+	                return Stages_1.StageOrder.indexOf(store.currentEditItemPreviousStage) < Stages_1.StageOrder.indexOf(store.currentEditItem.Stage);
 	            }
 	        }]
 	};
@@ -41171,6 +41184,34 @@
 /***/ (function(module, exports) {
 
 	"use strict";
+	exports.StageOrder = [
+	    'Enter Aquisition Information',
+	    'Processing Plan',
+	    'Review Processing Plan',
+	    'Review of Accession Record',
+	    'Retrieve Collection From Curator',
+	    'Assign Processor',
+	    'Request Materials',
+	    'Deliver Collection',
+	    'Enter Description',
+	    'Content Review',
+	    'Collections Management Collection Review',
+	    'Pickup from Processor',
+	    'Description Specialist Collection Review',
+	    'Authority Work Review',
+	    'Final Curator Review',
+	    'Catalog Collection',
+	    'Uploading Finding Aid',
+	    'Labeling Barcode And Locations Assigned',
+	    'Complete'
+	];
+
+
+/***/ }),
+/* 419 */
+/***/ (function(module, exports) {
+
+	"use strict";
 	class IUser {
 	}
 	exports.IUser = IUser;
@@ -41186,7 +41227,7 @@
 
 
 /***/ }),
-/* 419 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41198,9 +41239,9 @@
 	        step((generator = generator.apply(thisArg, _arguments)).next());
 	    });
 	};
-	const dao = __webpack_require__(420);
-	const groups = __webpack_require__(422);
-	const transformers = __webpack_require__(423);
+	const dao = __webpack_require__(421);
+	const groups = __webpack_require__(423);
+	const transformers = __webpack_require__(424);
 	const PdfService = __webpack_require__(426);
 	function fetchCurrentUser() {
 	    return __awaiter(this, void 0, void 0, function* () {
@@ -41290,11 +41331,11 @@
 
 
 /***/ }),
-/* 420 */
+/* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
-	const jquery_1 = __webpack_require__(421);
+	const jquery_1 = __webpack_require__(422);
 	const hostWebUrl = 'https://ltpsc-workflows.byu.edu';
 	const archiveLibraryUrl = 'Archive';
 	function fetchCurrentUserFromServer() {
@@ -41421,7 +41462,7 @@
 
 
 /***/ }),
-/* 421 */
+/* 422 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -51680,7 +51721,7 @@
 
 
 /***/ }),
-/* 422 */
+/* 423 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -51729,11 +51770,11 @@
 
 
 /***/ }),
-/* 423 */
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
-	const ListItem_1 = __webpack_require__(424);
+	const ListItem_1 = __webpack_require__(425);
 	const mobx_1 = __webpack_require__(194);
 	function listItemDTOsToListItems(listItemDTOs) {
 	    return listItemDTOs.map((dto) => listItemDTOToListItem(dto));
@@ -51749,7 +51790,7 @@
 
 
 /***/ }),
-/* 424 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -51763,7 +51804,7 @@
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	const mobx_1 = __webpack_require__(194);
-	const Stages_1 = __webpack_require__(425);
+	const Stages_1 = __webpack_require__(418);
 	class ListItem {
 	    constructor() {
 	        this.Stage = Stages_1.StageOrder[0];
@@ -52215,34 +52256,6 @@
 	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00216", void 0);
 	exports.ListItem = ListItem;
 	exports.DEFAULT_LIST_ITEM = new ListItem();
-
-
-/***/ }),
-/* 425 */
-/***/ (function(module, exports) {
-
-	"use strict";
-	exports.StageOrder = [
-	    'Enter Aquisition Information',
-	    'Processing Plan',
-	    'Review Processing Plan',
-	    'Review of Accession Record',
-	    'Retrieve Collection From Curator',
-	    'Assign Processor',
-	    'Request Materials',
-	    'Deliver Collection',
-	    'Enter Description',
-	    'Content Review',
-	    'Collections Management Collection Review',
-	    'Pickup from Processor',
-	    'Description Specialist Collection Review',
-	    'Authority Work Review',
-	    'Final Curator Review',
-	    'Catalog Collection',
-	    'Uploading Finding Aid',
-	    'Labeling Barcode And Locations Assigned',
-	    'Complete'
-	];
 
 
 /***/ }),
@@ -59769,10 +59782,17 @@
 	                    React.createElement("div", {style: Styles_EditItemForm_1.formButtonStyle}, 
 	                        React.createElement(RaisedButton_1.default, {label: 'suspend item', backgroundColor: '#EEB3B3', onClick: this.listDataStore.openSuspensionDialogue, disabled: this.listDataStore.asyncPendingLockout})
 	                    ), 
-	                this.listDataStore.currentView.additionalActions &&
-	                    this.listDataStore.currentView.additionalActions.map((action, index) => (React.createElement("div", {key: index, style: Styles_EditItemForm_1.formButtonStyle}, 
-	                        React.createElement(RaisedButton_1.default, {label: action.buttonLabel, backgroundColor: action.buttonColor, onClick: action.composeAction(this.listDataStore), disabled: this.listDataStore.asyncPendingLockout})
-	                    )))), 
+	                (function () {
+	                    if (this.listDataStore.currentView.additionalActions) {
+	                        return this.listDataStore.currentView.additionalActions.map((action, index) => {
+	                            if (!action.isHidden || (action.isHidden && !action.isHidden(this.listDataStore))) {
+	                                return (React.createElement("div", {key: index, style: Styles_EditItemForm_1.formButtonStyle}, 
+	                                    React.createElement(RaisedButton_1.default, {label: action.buttonLabel, backgroundColor: action.buttonColor, onClick: action.composeAction(this.listDataStore), disabled: this.listDataStore.asyncPendingLockout})
+	                                ));
+	                            }
+	                        });
+	                    }
+	                }).call(this)), 
 	            React.createElement(Dialog_1.default, {contentStyle: Styles_EditItemForm_1.suspensionDialogueStyle, open: this.listDataStore.isDisplaySuspensionDialogue, title: 'Confirm', modal: true}, 
 	                React.createElement("div", null, 'Are you sure you want to suspend the current item?'), 
 	                React.createElement(RaisedButton_1.default, {label: 'Yes', style: Styles_EditItemForm_1.formButtonStyle, onClick: this.listDataStore.suspendEditItem}), 

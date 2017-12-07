@@ -1,7 +1,7 @@
 import { Column } from './Columns';
 import * as Cols from './Columns'
 import { getFormattedDate } from '../utils/general';
-import { StageName } from './Stages';
+import { StageName, StageOrder } from './Stages';
 import ListDataStore from '../stores/ListDataStore';
 import { generatePickupTicketPdf } from '../services/PdfService';
 
@@ -18,7 +18,8 @@ export interface IView {
 export interface IItemAction {
     buttonLabel: string
     buttonColor?: string
-    composeAction(store: ListDataStore): () => void
+    composeAction: (store: ListDataStore) => () => void
+    isHidden?: (store: ListDataStore) => boolean
 }
 
 
@@ -34,7 +35,17 @@ export const EnterAquisitionInformation: IView = {
         new Cols.CollectingArea().makeRequired(),
         new Cols.SubmittingCurator().makeRequired(),
         new Cols.StageComments_EnterAcquisitionInformation()
-    ]
+    ],
+    additionalActions: [{
+        buttonLabel: 'Return to Accession Record Review',
+        composeAction: function(store) {
+            return store.returnEditItemToPreviousStage
+        },
+        isHidden(store) {
+            // only show this action if the item was just sent from 'Review of Accession Record'
+            return store.currentEditItemPreviousStage != 'Review of Accession Record'
+        }
+    }]
 }
 
 export const ProcessingPlan: IView = {
@@ -172,6 +183,10 @@ export const EnterDescription: IView = {
         buttonLabel: 'Return to Sender of Comments',
         composeAction: function(store) {
             return store.returnEditItemToPreviousStage
+        },
+        isHidden(store) {
+            // an item can only be returned to sender of comments if it was sent from a higher stage to begin with (prevStave > curStage)
+            return StageOrder.indexOf(store.currentEditItemPreviousStage) < StageOrder.indexOf(store.currentEditItem.Stage as StageName)
         }
     }]
 }
