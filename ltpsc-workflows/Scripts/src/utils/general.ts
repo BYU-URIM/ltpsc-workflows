@@ -39,7 +39,7 @@ export function getMovedToColumnNameFromStageName(stageName: StageName) {
             return 'Moved_x0020_to_x0020_Enter_x0020'
 
         case 'Enter Description':
-            return 'Moved_x0020_to_x0020_Enter_x0020'
+            return 'Moved_x0020_to_x0020_Enter_x00200'
 
         case 'Final Curator Review':
             return 'Moved_x0020_to_x0020_Final_x0020'
@@ -77,5 +77,72 @@ export function getMovedToColumnNameFromStageName(stageName: StageName) {
                 or this function is not correctly mapping the stage name to the appropriate SharePoint column name.` 
             )
 
+    }
+}
+
+export function getSubmitterColumnFromStageName(stageName: StageName) {
+    switch(stageName) {
+        case 'Assign Processor':
+            return 'Submitter_AssignProcessor'
+
+        case 'Authority Work Review':
+            return 'Submitter_AuthorityWorkReview'
+            
+        case 'Catalog Collection':
+            return 'Submitter_CatalogCollection'
+
+        case 'Collections Management Collection Review':
+            return 'Submitter_CollectionsManagementC'
+
+        case 'Content Review':
+            return 'Submitter_ContentReview'
+
+        case 'Deliver Collection':
+            return 'Submitter_DeliverCollection'
+
+        case 'Description Specialist Collection Review':
+            return 'Submitter_DescriptionSpecialistC'
+
+        case 'Enter Aquisition Information':
+            return 'Submitter_EnterAcquisitionInform'
+
+        case 'Enter Description':
+            return 'Submitter_EnterDescription'
+
+        case 'Final Curator Review':
+            return 'Submitter_FinalCuratorReview'
+
+        case 'Labeling Barcode And Locations Assigned':
+            return 'Submitter_LabelingBarcodeAndLoca'
+
+        case 'Pickup from Processor':
+            return 'Submitter_PickupFromProcessor'
+
+        case 'Processing Plan':
+            return 'Submitter_ProcessingPlan'
+
+        case 'Retrieve Collection From Curator':
+            return 'Submitter_RetrieveCollectionFrom'
+
+        case 'Review Processing Plan':
+            return 'Submitter_ReviewProcessingPlan'
+
+        case 'Uploading Finding Aid':
+            return 'Submitter_UploadingFindingAid'
+        
+        case 'Request Materials':
+            return 'Submitter_RequestMaterials'
+        
+        case 'Review of Accession Record':
+            return 'Submitter_ReviewOfAccessionRecor'
+        
+        case 'Suspended':
+            return 'Submitter_Suspended'
+
+        default:
+            throw new Error(
+                `Stage '${stageName}' is not being mapped to a 'Submitter ___' column. Either the Submitter_${stageName} column does not exist in SharePoint
+                or this function is not correctly mapping the stage name to the appropriate SharePoint column name.` 
+            )
     }
 }

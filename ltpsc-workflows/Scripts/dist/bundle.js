@@ -36687,6 +36687,7 @@
 	            const pendingStageData = {
 	                Stage: this.currentEditItemNextStage,
 	                [general_1.getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: general_1.getFormattedDate(),
+	                [general_1.getSubmitterColumnFromStageName(this.currentEditItem.Stage)]: this.currentUser.name,
 	                Previous_x0020_Stage: this.currentEditItem.Stage
 	            };
 	            const listItemSaveInfo = yield this.saveEditItemForm(pendingStageData);
@@ -41150,7 +41151,7 @@
 	        case 'Enter Aquisition Information':
 	            return 'Moved_x0020_to_x0020_Enter_x0020';
 	        case 'Enter Description':
-	            return 'Moved_x0020_to_x0020_Enter_x0020';
+	            return 'Moved_x0020_to_x0020_Enter_x00200';
 	        case 'Final Curator Review':
 	            return 'Moved_x0020_to_x0020_Final_x0020';
 	        case 'Labeling Barcode And Locations Assigned':
@@ -41177,6 +41178,52 @@
 	    }
 	}
 	exports.getMovedToColumnNameFromStageName = getMovedToColumnNameFromStageName;
+	function getSubmitterColumnFromStageName(stageName) {
+	    switch (stageName) {
+	        case 'Assign Processor':
+	            return 'Submitter_AssignProcessor';
+	        case 'Authority Work Review':
+	            return 'Submitter_AuthorityWorkReview';
+	        case 'Catalog Collection':
+	            return 'Submitter_CatalogCollection';
+	        case 'Collections Management Collection Review':
+	            return 'Submitter_CollectionsManagementC';
+	        case 'Content Review':
+	            return 'Submitter_ContentReview';
+	        case 'Deliver Collection':
+	            return 'Submitter_DeliverCollection';
+	        case 'Description Specialist Collection Review':
+	            return 'Submitter_DescriptionSpecialistC';
+	        case 'Enter Aquisition Information':
+	            return 'Submitter_EnterAcquisitionInform';
+	        case 'Enter Description':
+	            return 'Submitter_EnterDescription';
+	        case 'Final Curator Review':
+	            return 'Submitter_FinalCuratorReview';
+	        case 'Labeling Barcode And Locations Assigned':
+	            return 'Submitter_LabelingBarcodeAndLoca';
+	        case 'Pickup from Processor':
+	            return 'Submitter_PickupFromProcessor';
+	        case 'Processing Plan':
+	            return 'Submitter_ProcessingPlan';
+	        case 'Retrieve Collection From Curator':
+	            return 'Submitter_RetrieveCollectionFrom';
+	        case 'Review Processing Plan':
+	            return 'Submitter_ReviewProcessingPlan';
+	        case 'Uploading Finding Aid':
+	            return 'Submitter_UploadingFindingAid';
+	        case 'Request Materials':
+	            return 'Submitter_RequestMaterials';
+	        case 'Review of Accession Record':
+	            return 'Submitter_ReviewOfAccessionRecor';
+	        case 'Suspended':
+	            return 'Submitter_Suspended';
+	        default:
+	            throw new Error(`Stage '${stageName}' is not being mapped to a 'Submitter ___' column. Either the Submitter_${stageName} column does not exist in SharePoint
+	                or this function is not correctly mapping the stage name to the appropriate SharePoint column name.`);
+	    }
+	}
+	exports.getSubmitterColumnFromStageName = getSubmitterColumnFromStageName;
 
 
 /***/ }),
@@ -52181,6 +52228,10 @@
 	__decorate([
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
+	], ListItem.prototype, "Moved_x0020_to_x0020_Request_x00", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
 	], ListItem.prototype, "Previous_x0020_Stage", void 0);
 	__decorate([
 	    mobx_1.observable, 
@@ -52254,6 +52305,82 @@
 	    mobx_1.observable, 
 	    __metadata('design:type', String)
 	], ListItem.prototype, "Stage_x0020_Comments_x0020__x00216", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_AssignProcessor", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_AuthorityWorkReview", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_CatalogCollection", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_CollectionsManagementC", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_ContentReview", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_DeliverCollection", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_DescriptionSpecialistC", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_EnterAcquisitionInform", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_EnterDescription", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_FinalCuratorReview", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_LabelingBarcodeAndLoca", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_PickupFromProcessor", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_ProcessingPlan", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_RequestMaterials", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_RetrieveCollectionFrom", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_ReviewOfAccessionRecor", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_ReviewProcessingPlan", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_UploadingFindingAid", void 0);
+	__decorate([
+	    mobx_1.observable, 
+	    __metadata('design:type', String)
+	], ListItem.prototype, "Submitter_Suspended", void 0);
 	exports.ListItem = ListItem;
 	exports.DEFAULT_LIST_ITEM = new ListItem();
 
@@ -52307,6 +52434,9 @@
 	        { header: `LTPSC Item ${listItem.Call_x0020_Number}` },
 	        { subheader: 'Enter Acquisition Information' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_EnterAcquisitionInform} on ${listItem.Moved_x0020_to_x0020_Processing_}`
+	            } },
+	        { table: {
 	                'Title': listItem.Title,
 	                'Accession Number': listItem.Accession_x0020_Number,
 	                'Call Numbert': listItem.Call_x0020_Number,
@@ -52321,6 +52451,9 @@
 	                'Stage Comments - Enter Acquisition Information': listItem.Stage_x0020_Comments_x0020__x002
 	            } },
 	        { subheader: 'Processing Plan' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_ProcessingPlan} on ${listItem.Moved_x0020_to_x0020_Review_x002}`
+	            } },
 	        { table: {
 	                'Processing Plan Date': listItem.Processing_x0020_Plan_x0020_Date,
 	                'Extent In Linear Feature': listItem.Extent_x0020__x002d__x0020_in_x0,
@@ -52344,6 +52477,9 @@
 	            } },
 	        { subheader: 'Review Processing Plan' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_ReviewProcessingPlan} on ${listItem.Moved_x0020_to_x0020_Review_x0020}`
+	            } },
+	        { table: {
 	                'Approve Processing Plan': listItem.Approve_x0020_Processing_x0020_P,
 	                'Processing Plan Revision Date': listItem.Process_x0020_Plan_x0020_Revisio
 	            } },
@@ -52355,6 +52491,9 @@
 	                'Stage Comments - Review Processing Plan': 'Stage_x0020_Comments_x0020__x0021'
 	            } },
 	        { subheader: 'Retrieve Collection from Curator' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_RetrieveCollectionFrom} on ${listItem.Moved_x0020_to_x0020_Assign_x002}`
+	            } },
 	        { table: {
 	                'Pickup Location': listItem.Pickup_x0020_Location,
 	                'Pickup Date': listItem.Pickup_x0020_Date,
@@ -52369,6 +52508,9 @@
 	            } },
 	        { subheader: 'Assign Processor' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_AssignProcessor} on ${listItem.Moved_x0020_to_x0020_Request_x00}`
+	            } },
+	        { table: {
 	                'Approve Request': listItem.Approve_x0020_Request,
 	                'Review Date': listItem.Review_x0020_Date,
 	                'Assigned Processor': listItem.Assigned_x0020_Processor,
@@ -52382,10 +52524,16 @@
 	            } },
 	        { subheader: 'Request Materials' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_RequestMaterials} on ${listItem.Moved_x0020_to_x0020_Deliver_x00}`
+	            } },
+	        { table: {
 	                'Location of Delivery': listItem.Location_x0020_of_x0020_Delivery,
 	                'Stage Comments - Request Materials': listItem.Stage_x0020_Comments_x0020__x0024
 	            } },
 	        { subheader: 'Deliver Collection' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_DeliverCollection} on ${listItem.Moved_x0020_to_x0020_Enter_x00200}`
+	            } },
 	        { table: {
 	                'Location of Materials': listItem.Location_x0020_of_x0020_Material,
 	                'Expected Delivery Date': listItem.Expected_x0020_Delivery_x0020_Da,
@@ -52395,12 +52543,15 @@
 	        { table: {
 	                'Delivery Status': listItem.Delivery_x0020_Status,
 	                'Delivery Explanation': listItem.Deliver_x0020_Explanation,
-	                'Date Delivered': listItem.Deliver_x0020_Explanation
+	                'Date Delivered': listItem.Date_x0020_Delivered
 	            } },
 	        { table: {
 	                'Stage Comments - Deliver Collection': listItem.Stage_x0020_Comments_x0020__x0025
 	            } },
 	        { subheader: 'Enter Description' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_EnterDescription} on ${listItem.Moved_x0020_to_x0020_Content_x00}`
+	            } },
 	        { table: {
 	                'Restrictions': listItem.Restrictions,
 	                'Restrictions Comments': listItem.Restrictions_x002d_Comments
@@ -52414,6 +52565,9 @@
 	            } },
 	        { subheader: 'Content Review' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_ContentReview} on ${listItem.Moved_x0020_to_x0020_Collections}`
+	            } },
+	        { table: {
 	                'Supervisor Review Date': listItem.Supervisor_x0020_Review_x0020_Da,
 	                'Supervisor Approval': listItem.Supervisor_x0020_Approval
 	            } },
@@ -52423,9 +52577,15 @@
 	            } },
 	        { subheader: 'Collections Management Collection Review' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_CollectionsManagementC} on ${listItem.Moved_x0020_to_x0020_Pickup_x002}`
+	            } },
+	        { table: {
 	                'Stage Comments: Collections Management Collection Review': listItem.Stage_x0020_Comments_x0020__x0028
 	            } },
 	        { subheader: 'Pickup from Processor' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_PickupFromProcessor} on ${listItem.Moved_x0020_to_x0020_Description}`
+	            } },
 	        { table: {
 	                'Pickup Shelving Location': listItem.Pickup_x0020_Shelving_x0020_Loca,
 	                'Pickup Shelving Date': listItem.Pickup_x0020_Shelving_x0020_Date
@@ -52435,9 +52595,15 @@
 	            } },
 	        { subheader: 'Description Specialist Collection Review' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_DescriptionSpecialistC} on ${listItem.Moved_x0020_to_x0020_Authority_x}`
+	            } },
+	        { table: {
 	                'Stage Comments - Description Specialist Collections Review': listItem.Stage_x0020_Comments_x0020__x00210
 	            } },
 	        { subheader: 'Authority Work Review' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_AuthorityWorkReview} on ${listItem.Moved_x0020_to_x0020_Final_x0020}`
+	            } },
 	        { table: {
 	                'Collection Management Review Date': listItem.Collection_x0020_Management_x0021,
 	                'Collection Management Comments': listItem.Collection_x0020_Management_x0020,
@@ -52449,11 +52615,17 @@
 	        { table: {
 	                'Stage Comments - Authority Work Review': listItem.Stage_x0020_Comments_x0020__x00211
 	            } },
-	        { subeader: 'Final Curator Review' },
+	        { subheader: 'Final Curator Review' },
 	        { table: {
-	                'Stage Comments - Catalog Collection': listItem.Stage_x0020_Comments_x0020__x00214
+	                'Submission': `Submitted by ${listItem.Submitter_FinalCuratorReview} on ${listItem.Moved_x0020_to_x0020_Catalog_x00}`
+	            } },
+	        { table: {
+	                'Stage Comments - Final Curator Review': listItem.Stage_x0020_Comments_x0020__x00214
 	            } },
 	        { subheader: 'Catalog Collection' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_CatalogCollection} on ${listItem.Moved_x0020_to_x0020_Uploading_x}`
+	            } },
 	        { table: {
 	                'Cataloging Date': listItem.Cataloging_x0020_Date,
 	                'Cataloging Done': listItem.Cataloging_x0020_Done
@@ -52463,6 +52635,9 @@
 	            } },
 	        { subheader: 'Upload Finding Aid' },
 	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_UploadingFindingAid} on ${listItem.Moved_x0020_to_x0020_Labeling_x0}`
+	            } },
+	        { table: {
 	                'Upload Date': listItem.Upload_x0020_Date,
 	                'Finding Aid Uploaded': listItem.Finding_x0020_Aid_x0020_Uploaded
 	            } },
@@ -52470,6 +52645,9 @@
 	                'Stage Comments - Upload Finding Aid': listItem.Stage_x0020_Comments_x0020__x00213
 	            } },
 	        { subheader: 'Labeling Barcode and Location Assigned' },
+	        { table: {
+	                'Submission': `Submitted by ${listItem.Submitter_LabelingBarcodeAndLoca} on ${listItem.Moved_x0020_to_x0020_Complete}`
+	            } },
 	        { table: {
 	                'Labeling Date': listItem.Labeling_x0020_Date,
 	                'Labeling Done': listItem.Labeling_x0020_Done,

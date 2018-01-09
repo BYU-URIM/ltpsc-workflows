@@ -94,6 +94,7 @@ export class ListItem {
     @observable Moved_x0020_to_x0020_Suspended: string
     @observable Moved_x0020_to_x0020_Uploading_x: string
     @observable Moved_x0020_to_x0020_Review_x0020: string
+    @observable Moved_x0020_to_x0020_Request_x00: string
     @observable Previous_x0020_Stage: string
     @observable Stage_x0020_Comments_x0020__x0023: string // StageComments_AssignProcessor
     @observable Stage_x0020_Comments_x0020__x00211: string // StageComments_AuthorityWorkReview
@@ -113,6 +114,25 @@ export class ListItem {
     @observable Stage_x0020_Comments_x0020__x0021: string // StageComments_ReviewProcessingPlan
     @observable Stage_x0020_Comments_x0020__x00213: string // StageComments_UploadingFindingAid
     @observable Stage_x0020_Comments_x0020__x00216: string // StageComments_ReviewAccessionRecords
+    @observable Submitter_AssignProcessor: string
+    @observable Submitter_AuthorityWorkReview: string
+    @observable Submitter_CatalogCollection: string
+    @observable Submitter_CollectionsManagementC: string // full name: Submitter_CollectionsManagementCollectionsReview
+    @observable Submitter_ContentReview: string
+    @observable Submitter_DeliverCollection: string
+    @observable Submitter_DescriptionSpecialistC: string // full name: Submitter_DescriptionSpecialistCollectionReview
+    @observable Submitter_EnterAcquisitionInform: string // full name: Submitter_EnterAcquisitionInformation
+    @observable Submitter_EnterDescription: string
+    @observable Submitter_FinalCuratorReview: string
+    @observable Submitter_LabelingBarcodeAndLoca: string // full name: Submitter_LabelingBarcodeAndLocationsAssigned
+    @observable Submitter_PickupFromProcessor: string
+    @observable Submitter_ProcessingPlan: string
+    @observable Submitter_RequestMaterials: string
+    @observable Submitter_RetrieveCollectionFrom: string // full name: Submitter_RetrieveCollectionFromCurator
+    @observable Submitter_ReviewOfAccessionRecor: string // Submitter_ReviewOfAccessionRecord
+    @observable Submitter_ReviewProcessingPlan: string
+    @observable Submitter_UploadingFindingAid: string
+    @observable Submitter_Suspended: string
 }
 
 export const DEFAULT_LIST_ITEM = new ListItem()

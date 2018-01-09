@@ -49,6 +49,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // ENTER ACQUISITION INFORMATION
         {subheader: 'Enter Acquisition Information'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_EnterAcquisitionInform} on ${listItem.Moved_x0020_to_x0020_Processing_}`
+        }},
+        {table: {
             'Title': listItem.Title,
             'Accession Number': listItem.Accession_x0020_Number,
             'Call Numbert': listItem.Call_x0020_Number,
@@ -65,6 +68,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
 
         // PROCESSING PLAN
         {subheader: 'Processing Plan'},
+        {table: {
+            'Submission': `Submitted by ${listItem.Submitter_ProcessingPlan} on ${listItem.Moved_x0020_to_x0020_Review_x002}`
+        }},
         {table: {
             'Processing Plan Date': listItem.Processing_x0020_Plan_x0020_Date,
             'Extent In Linear Feature': listItem.Extent_x0020__x002d__x0020_in_x0,
@@ -90,6 +96,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // REVIEW PROCESSING PLAN
         {subheader: 'Review Processing Plan'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_ReviewProcessingPlan} on ${listItem.Moved_x0020_to_x0020_Review_x0020}`
+        }},
+        {table: {
             'Approve Processing Plan': listItem.Approve_x0020_Processing_x0020_P,
             'Processing Plan Revision Date': listItem.Process_x0020_Plan_x0020_Revisio
         }},
@@ -103,6 +112,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
 
         // RETRIEVE COLLECTION FROM CURATOR
         {subheader: 'Retrieve Collection from Curator'},
+        {table: {
+            'Submission': `Submitted by ${listItem.Submitter_RetrieveCollectionFrom} on ${listItem.Moved_x0020_to_x0020_Assign_x002}`
+        }},
         {table: {
             'Pickup Location': listItem.Pickup_x0020_Location,
             'Pickup Date': listItem.Pickup_x0020_Date,
@@ -119,6 +131,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // ASSIGN PROCESSOR
         {subheader: 'Assign Processor'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_AssignProcessor} on ${listItem.Moved_x0020_to_x0020_Request_x00}`
+        }},
+        {table: {
             'Approve Request': listItem.Approve_x0020_Request,
             'Review Date': listItem.Review_x0020_Date,
             'Assigned Processor': listItem.Assigned_x0020_Processor,
@@ -134,12 +149,18 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // REQUEST MATERIALS
         {subheader: 'Request Materials'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_RequestMaterials} on ${listItem.Moved_x0020_to_x0020_Deliver_x00}`
+        }},
+        {table: {
             'Location of Delivery': listItem.Location_x0020_of_x0020_Delivery,
             'Stage Comments - Request Materials': listItem.Stage_x0020_Comments_x0020__x0024
         }},
 
         // DELIVER COLLECTION
         {subheader: 'Deliver Collection'},
+        {table: {
+            'Submission': `Submitted by ${listItem.Submitter_DeliverCollection} on ${listItem.Moved_x0020_to_x0020_Enter_x00200}`
+        }},
         {table: {
             'Location of Materials': listItem.Location_x0020_of_x0020_Material,
             'Expected Delivery Date': listItem.Expected_x0020_Delivery_x0020_Da,
@@ -158,6 +179,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // ENTER DESCRIPTION
         {subheader: 'Enter Description'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_EnterDescription} on ${listItem.Moved_x0020_to_x0020_Content_x00}`
+        }},
+        {table: {
             'Restrictions': listItem.Restrictions,
             'Restrictions Comments': listItem.Restrictions_x002d_Comments
         }},
@@ -172,6 +196,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // CONTENT REVIEW
         {subheader: 'Content Review'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_ContentReview} on ${listItem.Moved_x0020_to_x0020_Collections}`
+        }},
+        {table: {
             'Supervisor Review Date': listItem.Supervisor_x0020_Review_x0020_Da,
             'Supervisor Approval': listItem.Supervisor_x0020_Approval
         }},
@@ -183,11 +210,17 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // COLLECTIONS MANAGEMENT COLLECTION REVIEW
         {subheader: 'Collections Management Collection Review'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_CollectionsManagementC} on ${listItem.Moved_x0020_to_x0020_Pickup_x002}`
+        }},
+        {table: {
             'Stage Comments: Collections Management Collection Review': listItem.Stage_x0020_Comments_x0020__x0028
         }},
 
         // PICKUP FROM PROCESSOR
         {subheader: 'Pickup from Processor'},
+        {table: {
+            'Submission': `Submitted by ${listItem.Submitter_PickupFromProcessor} on ${listItem.Moved_x0020_to_x0020_Description}`
+        }},
         {table: {
             'Pickup Shelving Location': listItem.Pickup_x0020_Shelving_x0020_Loca,
             'Pickup Shelving Date': listItem.Pickup_x0020_Shelving_x0020_Date
@@ -199,11 +232,17 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // DESCRIPTION SPECIALIST COLLECTION REVIEW
         {subheader: 'Description Specialist Collection Review'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_DescriptionSpecialistC} on ${listItem.Moved_x0020_to_x0020_Authority_x}`
+        }},
+        {table: {
             'Stage Comments - Description Specialist Collections Review': listItem.Stage_x0020_Comments_x0020__x00210
         }},
 
         // AUTHORITY WORK REVIEW
         {subheader: 'Authority Work Review'},
+        {table: {
+            'Submission': `Submitted by ${listItem.Submitter_AuthorityWorkReview} on ${listItem.Moved_x0020_to_x0020_Final_x0020}`
+        }},
         {table: {
             'Collection Management Review Date': listItem.Collection_x0020_Management_x0021,
             'Collection Management Comments': listItem.Collection_x0020_Management_x0020,
@@ -217,13 +256,19 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         }},
 
         // FINAL CURATOR REVIEW
-        {subeader: 'Final Curator Review'},
+        {subheader: 'Final Curator Review'},
         {table: {
-            'Stage Comments - Catalog Collection': listItem.Stage_x0020_Comments_x0020__x00214
+            'Submission': `Submitted by ${listItem.Submitter_FinalCuratorReview} on ${listItem.Moved_x0020_to_x0020_Catalog_x00}`
+        }},
+        {table: {
+            'Stage Comments - Final Curator Review': listItem.Stage_x0020_Comments_x0020__x00214
         }},
 
         // CATALOG COLLECTION
         {subheader: 'Catalog Collection'},
+        {table: {
+            'Submission': `Submitted by ${listItem.Submitter_CatalogCollection} on ${listItem.Moved_x0020_to_x0020_Uploading_x}`
+        }},
         {table: {
             'Cataloging Date': listItem.Cataloging_x0020_Date,
             'Cataloging Done': listItem.Cataloging_x0020_Done
@@ -235,6 +280,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
         // UPLOADING FINDING AID
         {subheader: 'Upload Finding Aid'},
         {table: {
+            'Submission': `Submitted by ${listItem.Submitter_UploadingFindingAid} on ${listItem.Moved_x0020_to_x0020_Labeling_x0}`
+        }},
+        {table: {
             'Upload Date': listItem.Upload_x0020_Date,
             'Finding Aid Uploaded': listItem.Finding_x0020_Aid_x0020_Uploaded
         }},
@@ -244,6 +292,9 @@ function createListItemPdfMakeObject(listItem: ListItem): any {
 
         // LABELING BARCODE AND LOCATIONS ASSIGNED
         {subheader: 'Labeling Barcode and Location Assigned'},
+        {table: {
+            'Submission': `Submitted by ${listItem.Submitter_LabelingBarcodeAndLoca} on ${listItem.Moved_x0020_to_x0020_Complete}`
+        }},
         {table: {
             'Labeling Date': listItem.Labeling_x0020_Date,
             'Labeling Done': listItem.Labeling_x0020_Done,

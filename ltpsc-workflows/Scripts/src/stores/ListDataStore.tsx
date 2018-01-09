@@ -7,7 +7,7 @@ import { IUser } from '../model/Users'
 import * as PersistorService from '../services/PersistorService'
 import { DEFAULT_USER } from '../model/Users'
 import { DEAFULT_VIEW } from '../model/Views'
-import { DATE_REGEX, getMovedToColumnNameFromStageName, getFormattedDate } from '../utils/general';
+import { DATE_REGEX, getMovedToColumnNameFromStageName, getFormattedDate, getSubmitterColumnFromStageName } from '../utils/general';
 import { ListItem, DEFAULT_LIST_ITEM } from '../model/ListItem';
 import { StageName, StageOrder, IPendingStageData } from '../model/Stages';
 import { EditFormStatusEnum } from '../model/EditFormStatusEnum';
@@ -110,6 +110,7 @@ export default class ListDataStore {
         const pendingStageData: IPendingStageData = {
             Stage: this.currentEditItemNextStage, 
             [getMovedToColumnNameFromStageName(this.currentEditItemNextStage)]: getFormattedDate(),
+            [getSubmitterColumnFromStageName(this.currentEditItem.Stage as StageName)]: this.currentUser.name,
             Previous_x0020_Stage: this.currentEditItem.Stage as StageName
         }
         // await the list item save and store the JSON returned from the server if successfull or null if there was an error

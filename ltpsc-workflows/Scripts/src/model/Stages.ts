@@ -31,6 +31,6 @@ export const StageOrder: Array<StageName> = [
 // separate from the rest of the listItemData for easy roll back if save fails
 export interface IPendingStageData {
     Stage: StageName,
-    [movedToColumnName: string]: string,
+    [movedToOrSubmitterColumnName: string]: string,
     Previous_x0020_Stage?: StageName
 }
