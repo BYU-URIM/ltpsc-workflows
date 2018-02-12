@@ -438,7 +438,8 @@ export default class ListDataStore {
                     `The ${groupName} group has a pending LTPSC item due for processing.`
                 )
             } catch(error) {
-                this.raiseError(`save was successful, however, an error occurred while emailing group members`, error)
+                // this.raiseError(`save was successful, however, an error occurred while emailing group members`, error)
+                console.log(error)
             } finally {
                 runInAction(() => this.asyncPendingLockout = false)
             }
